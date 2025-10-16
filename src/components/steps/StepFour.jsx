@@ -13,7 +13,8 @@ const StepFour = ({ selections }) => {
     setError(null)
 
     try {
-      const response = await fetch('http://localhost:5000/api/generate', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+      const response = await fetch(`${backendUrl}/api/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -65,7 +66,8 @@ const StepFour = ({ selections }) => {
 
   const handlePayment = async () => {
     try {
-      const response = await fetch('http://localhost:5000/api/create-checkout', {
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+      const response = await fetch(`${backendUrl}/api/create-checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

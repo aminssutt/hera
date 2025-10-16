@@ -12,7 +12,8 @@ const Success = () => {
   useEffect(() => {
     // Optional: Verify payment status with backend
     if (sessionId) {
-      fetch(`http://localhost:5000/api/session-status/${sessionId}`)
+      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+      fetch(`${backendUrl}/api/session-status/${sessionId}`)
         .then(res => res.json())
         .then(data => {
           if (data.success && data.status === 'paid') {
