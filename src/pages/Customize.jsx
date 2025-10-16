@@ -190,7 +190,7 @@ const Customize = () => {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.5, type: "spring", bounce: 0.2 }}
-                className="p-8"
+                className="p-8 pb-16"
               >
                 {currentStep === 1 && (
                   <StepOne 
