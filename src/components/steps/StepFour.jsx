@@ -63,6 +63,35 @@ const StepFour = ({ selections }) => {
     }
   }
 
+  const handlePayment = async () => {
+    try {
+      const response = await fetch('http://localhost:5000/api/create-checkout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          format: format,
+          bookType: bookType,
+          selections: selections
+          // No preview image - we'll regenerate all N pages fresh
+        }),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        // Redirect to Stripe Checkout
+        window.location.href = data.checkout_url
+      } else {
+        setError(data.error || 'Failed to create checkout session')
+      }
+    } catch (err) {
+      setError('Unable to connect to payment service. Please try again.')
+      console.error('Payment Error:', err)
+    }
+  }
+
   const getPrice = () => {
     const basePrice = format === 'pdf' ? 9.99 : 24.99
     return basePrice.toFixed(2)
@@ -350,6 +379,7 @@ const StepFour = ({ selections }) => {
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.95 }}
+                onClick={handlePayment}
                 className="bg-white text-hera-purple font-fredoka font-bold text-2xl px-12 py-5 rounded-full shadow-2xl hover:shadow-3xl transition-all"
               >
                 💳 Proceed to Payment

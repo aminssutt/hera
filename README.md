@@ -22,6 +22,9 @@ Create magical, personalized coloring books for children using Generative AI! �
 - **React Router** - Navigation
 - **Flask (Python)** - Backend API server
 - **Google Imagen AI** - Image generation
+- **Stripe** - Payment processing (Kakao Pay, Naver Pay, Cards)
+- **Resend** - Email delivery
+- **ReportLab** - PDF generation
 
 ## 📦 Installation
 
@@ -54,6 +57,33 @@ The backend will run on `http://localhost:5000`
 
 **⚠️ Important:** Both frontend and backend must be running for the AI generation to work!
 
+## 💳 Payment Integration
+
+Hēra supports multiple payment methods through Stripe:
+
+### 🇰🇷 Korean Payment Methods:
+- **Kakao Pay** (카카오페이)
+- **Naver Pay** (네이버페이)
+- **Samsung Pay**
+- **PayCo**
+
+### 🌍 International:
+- Credit/Debit Cards (Visa, Mastercard, Amex)
+- Apple Pay
+- Google Pay
+
+### Pricing:
+- **Digital PDF**: $9.99 USD
+- **Physical Book**: $24.99 USD
+
+### Testing Payment:
+Use test card: `4242 4242 4242 4242` (Exp: `12/25`, CVC: `123`)
+
+For detailed payment setup and testing instructions, see:
+- **[PAYMENT_SETUP.md](PAYMENT_SETUP.md)** - Stripe configuration guide
+- **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - How to test payments
+- **[STRIPE_INTEGRATION_FR.md](STRIPE_INTEGRATION_FR.md)** - Guide en français
+
 ## 🎯 Project Structure
 
 ```
@@ -69,13 +99,20 @@ Hera/
 │   │       └── StepFour.jsx   # AI Preview & Payment
 │   ├── pages/
 │   │   ├── Home.jsx           # Landing page
-│   │   └── Customize.jsx      # Customization wizard
+│   │   ├── Customize.jsx      # Customization wizard
+│   │   ├── Success.jsx        # Payment success page
+│   │   └── Cancel.jsx         # Payment cancelled page
 │   ├── App.jsx
 │   ├── main.jsx
 │   └── index.css
 ├── aipart/
 │   ├── generated_image.py     # Flask backend
+│   ├── payment.py             # Stripe payment handling
+│   ├── email_service.py       # Email delivery (Resend)
+│   ├── pdf_generator.py       # PDF creation (ReportLab)
 │   ├── requirements.txt       # Python dependencies
+│   ├── .env                   # API keys (not in Git)
+│   ├── .env.example           # Example configuration
 │   ├── generated_images/      # Generated images folder
 │   └── README.md              # Backend documentation
 ├── public/
@@ -106,12 +143,16 @@ Hera/
 - [x] Customization options (Step 3)
 - [x] AI preview generation (Step 4)
 - [x] Flask backend integration
-- [ ] Stripe payment integration
+- [x] Stripe payment integration (Kakao Pay, Naver Pay, Samsung Pay, PayCo, Cards)
+- [x] Success and Cancel pages
+- [x] Email service setup (Resend)
+- [x] PDF generator setup (ReportLab)
 - [ ] Complete book generation (multiple pages)
-- [ ] PDF download functionality
-- [ ] Physical book ordering
+- [ ] PDF download functionality via email
+- [ ] Physical book ordering and fulfillment
 - [ ] User accounts and order history
 - [ ] Admin dashboard
+- [ ] Colored page generation with user colors
 
 ## 👨‍💻 Development
 

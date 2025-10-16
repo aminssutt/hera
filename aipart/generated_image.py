@@ -6,12 +6,16 @@ import base64
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+from payment import payment_bp  # Import payment blueprint
 
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
 CORS(app)  # Enable CORS for React frontend
+
+# Register payment blueprint
+app.register_blueprint(payment_bp)
 
 # Configure upload folder
 UPLOAD_FOLDER = 'generated_images'

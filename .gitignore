@@ -35,13 +35,15 @@ wheels/
 .installed.cfg
 *.egg
 
-# AI Generated Images
+# AI Generated Images & PDFs
 aipart/generated_images/
+aipart/generated_pdfs/
 
 # Environment variables
 .env
 .env.local
 *.env
+!.env.example
 
 # Editor directories and files
 .vscode/*
