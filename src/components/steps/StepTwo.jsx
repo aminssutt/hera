@@ -1,0 +1,49 @@
+import { motion } from 'framer-motion'
+
+const topics = [
+  { name: 'Ghibli', description: 'Studio Ghibli inspired', emoji: '🎨' },
+  { name: 'Cartoon', description: 'Fun cartoon style', emoji: '😄' },
+  { name: 'Minimal', description: 'Simple & clean', emoji: '⭕' },
+  { name: 'Comic', description: 'Comic book style', emoji: '💥' },
+  { name: 'Detailed', description: 'Rich in details', emoji: '🔍' },
+  { name: 'Magical', description: 'Mystical & enchanting', emoji: '✨' }
+]
+
+const StepTwo = ({ selection, onSelect }) => {
+  return (
+    <div>
+      <h2 className="text-4xl font-fredoka font-bold text-gray-700 mb-8 text-center">
+        Choose Your Art Style
+      </h2>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {topics.map((topic, index) => (
+          <motion.div
+            key={topic.name}
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: index * 0.1 }}
+            whileHover={{ scale: 1.05, rotate: 2 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => onSelect(topic.name)}
+            className={`topic-card bg-white rounded-3xl p-8 text-center cursor-pointer shadow-lg
+              ${selection === topic.name ? 'selected ring-4 ring-hera-blue ring-offset-4' : 'hover:shadow-2xl'}
+            `}
+          >
+            <div className="text-7xl mb-4">
+              {topic.emoji}
+            </div>
+            <h3 className="text-2xl font-fredoka font-bold text-gray-700 mb-2">
+              {topic.name}
+            </h3>
+            <p className="text-gray-500 font-fredoka">
+              {topic.description}
+            </p>
+          </motion.div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
+export default StepTwo
