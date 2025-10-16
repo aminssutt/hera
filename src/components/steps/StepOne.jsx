@@ -27,14 +27,14 @@ const StepOne = ({ selection, onSelect }) => {
 
   return (
     <div>
-      <h2 className="text-4xl font-fredoka font-bold text-gray-700 mb-4 text-center">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4 text-center">
         Choose Your Theme(s)
       </h2>
-      <p className="text-center font-fredoka text-gray-500 mb-8">
+      <p className="text-center font-fredoka text-gray-500 mb-6 sm:mb-8 text-sm sm:text-base">
         Select 1 or 2 themes for your coloring book
       </p>
       
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
         {themes.map((theme, index) => (
           <motion.div
             key={theme.name}
@@ -44,14 +44,14 @@ const StepOne = ({ selection, onSelect }) => {
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => handleThemeClick(theme.name)}
-            className={`theme-card bg-white rounded-3xl p-6 text-center cursor-pointer shadow-lg
-              ${selection.includes(theme.name) ? 'selected ring-4 ring-hera-purple ring-offset-4' : 'hover:shadow-2xl'}
+            className={`theme-card bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center cursor-pointer shadow-lg
+              ${selection.includes(theme.name) ? 'selected ring-2 sm:ring-4 ring-hera-purple ring-offset-2 sm:ring-offset-4' : 'hover:shadow-2xl'}
             `}
           >
-            <div className={`text-6xl mb-4 bg-gradient-to-br ${theme.color} w-24 h-24 rounded-2xl flex items-center justify-center mx-auto`}>
+            <div className={`text-4xl sm:text-5xl md:text-6xl mb-3 sm:mb-4 bg-gradient-to-br ${theme.color} w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto`}>
               {theme.emoji}
             </div>
-            <h3 className="text-xl font-fredoka font-bold text-gray-700">
+            <h3 className="text-base sm:text-lg md:text-xl font-fredoka font-bold text-gray-700">
               {theme.name}
             </h3>
           </motion.div>

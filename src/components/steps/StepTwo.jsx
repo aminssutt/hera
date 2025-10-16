@@ -12,11 +12,11 @@ const topics = [
 const StepTwo = ({ selection, onSelect }) => {
   return (
     <div>
-      <h2 className="text-4xl font-fredoka font-bold text-gray-700 mb-8 text-center">
+      <h2 className="text-2xl sm:text-3xl md:text-4xl font-fredoka font-bold text-gray-700 mb-6 sm:mb-8 text-center">
         Choose Your Art Style
       </h2>
       
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
         {topics.map((topic, index) => (
           <motion.div
             key={topic.name}
@@ -26,17 +26,17 @@ const StepTwo = ({ selection, onSelect }) => {
             whileHover={{ scale: 1.05, rotate: 2 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => onSelect(topic.name)}
-            className={`topic-card bg-white rounded-3xl p-8 text-center cursor-pointer shadow-lg
-              ${selection === topic.name ? 'selected ring-4 ring-hera-blue ring-offset-4' : 'hover:shadow-2xl'}
+            className={`topic-card bg-white rounded-2xl sm:rounded-3xl p-6 sm:p-8 text-center cursor-pointer shadow-lg
+              ${selection === topic.name ? 'selected ring-2 sm:ring-4 ring-hera-blue ring-offset-2 sm:ring-offset-4' : 'hover:shadow-2xl'}
             `}
           >
-            <div className="text-7xl mb-4">
+            <div className="text-5xl sm:text-6xl md:text-7xl mb-3 sm:mb-4">
               {topic.emoji}
             </div>
-            <h3 className="text-2xl font-fredoka font-bold text-gray-700 mb-2">
+            <h3 className="text-xl sm:text-2xl font-fredoka font-bold text-gray-700 mb-2">
               {topic.name}
             </h3>
-            <p className="text-gray-500 font-fredoka">
+            <p className="text-sm sm:text-base text-gray-500 font-fredoka">
               {topic.description}
             </p>
           </motion.div>

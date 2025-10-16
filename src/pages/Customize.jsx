@@ -72,7 +72,7 @@ const Customize = () => {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center p-4 md:p-8">
+    <div className="min-h-screen flex items-center justify-center p-3 sm:p-4 md:p-8">
       <div className="w-full max-w-7xl">
         {/* Modal */}
         <Modal
@@ -87,29 +87,29 @@ const Customize = () => {
         <motion.div
           initial={{ y: -50, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="flex items-center justify-between mb-8"
+          className="flex items-center justify-between mb-6 sm:mb-8"
         >
           <motion.button
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={handleHomeClick}
-            className="bg-white/70 backdrop-blur-sm hover:bg-white/90 text-gray-700 font-fredoka font-bold px-6 py-3 rounded-full shadow-lg transition-all flex items-center gap-2"
+            className="bg-white/70 backdrop-blur-sm hover:bg-white/90 text-gray-700 font-fredoka font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg transition-all flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
           >
-            <span className="text-2xl">🏠</span>
-            <span>Home</span>
+            <span className="text-xl sm:text-2xl">🏠</span>
+            <span className="hidden sm:inline">Home</span>
           </motion.button>
           
-          <h1 className="text-5xl md:text-6xl font-bubblegum text-gray-700">Hēra</h1>
+          <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bubblegum text-gray-700">Hēra</h1>
           
-          <div className="w-32"></div> {/* Spacer for centering */}
+          <div className="w-16 sm:w-24 md:w-32"></div> {/* Spacer for centering */}
         </motion.div>
 
-        <div className="flex flex-col lg:flex-row gap-6">
-          {/* Sidebar - Steps Indicator */}
+        <div className="flex flex-col lg:flex-row gap-4 sm:gap-6">
+          {/* Sidebar - Steps Indicator (Hidden on mobile, shown on lg+) */}
           <motion.div
             initial={{ x: -100, opacity: 0 }}
             animate={{ x: 0, opacity: 1 }}
-            className="lg:w-80 bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-xl"
+            className="hidden lg:block lg:w-80 bg-white/60 backdrop-blur-sm rounded-3xl p-6 shadow-xl"
           >
             {/* Step 1 */}
             <div className={`mb-6 p-4 rounded-2xl transition-all ${currentStep === 1 ? 'bg-gradient-magical' : 'bg-gray-200'}`}>
@@ -179,8 +179,21 @@ const Customize = () => {
             </div>
           </motion.div>
 
+          {/* Mobile Step Indicator */}
+          <div className="lg:hidden bg-white/60 backdrop-blur-sm rounded-2xl p-3 mb-4 shadow-lg">
+            <div className="flex items-center justify-center gap-2 text-sm font-fredoka">
+              <span className={`px-3 py-1 rounded-full ${currentStep === 1 ? 'bg-gradient-magical text-white' : 'bg-gray-200 text-gray-500'}`}>1</span>
+              <span className="text-gray-400">→</span>
+              <span className={`px-3 py-1 rounded-full ${currentStep === 2 ? 'bg-gradient-magical text-white' : 'bg-gray-200 text-gray-500'}`}>2</span>
+              <span className="text-gray-400">→</span>
+              <span className={`px-3 py-1 rounded-full ${currentStep === 3 ? 'bg-gradient-magical text-white' : 'bg-gray-200 text-gray-500'}`}>3</span>
+              <span className="text-gray-400">→</span>
+              <span className={`px-3 py-1 rounded-full ${currentStep === 4 ? 'bg-gradient-magical text-white' : 'bg-gray-200 text-gray-500'}`}>4</span>
+            </div>
+          </div>
+
           {/* Main Content Area */}
-          <div className="flex-1 bg-white/70 backdrop-blur-sm rounded-3xl shadow-xl overflow-hidden">
+          <div className="flex-1 bg-white/70 backdrop-blur-sm rounded-2xl sm:rounded-3xl shadow-xl overflow-hidden">
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={currentStep}
@@ -190,7 +203,7 @@ const Customize = () => {
                 animate="center"
                 exit="exit"
                 transition={{ duration: 0.5, type: "spring", bounce: 0.2 }}
-                className="p-8 pb-16"
+                className="p-4 sm:p-6 md:p-8 pb-12 sm:pb-16"
               >
                 {currentStep === 1 && (
                   <StepOne 
@@ -219,11 +232,11 @@ const Customize = () => {
             </AnimatePresence>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between p-8 pt-0">
+            <div className="flex justify-between p-4 sm:p-6 md:p-8 pt-0 gap-2 sm:gap-4">
               <button
                 onClick={handleBack}
                 disabled={currentStep === 1}
-                className={`px-8 py-3 rounded-full font-fredoka font-bold text-xl ${
+                className={`px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-fredoka font-bold text-base sm:text-lg md:text-xl ${
                   currentStep === 1
                     ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                     : 'bg-gray-500 text-white hover:bg-gray-600'
@@ -235,7 +248,7 @@ const Customize = () => {
               {currentStep < 4 && (
                 <button
                   onClick={handleNext}
-                  className="px-8 py-3 rounded-full font-fredoka font-bold text-xl btn-gradient text-white transition-all"
+                  className="px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-fredoka font-bold text-base sm:text-lg md:text-xl btn-gradient text-white transition-all"
                 >
                   Next →
                 </button>

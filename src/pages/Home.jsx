@@ -11,16 +11,16 @@ const Home = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <section className="min-h-screen flex items-center justify-center p-8 relative">
+      <section className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 relative">
         <motion.div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
-          className="text-center max-w-4xl"
+          className="text-center max-w-4xl w-full px-2"
         >
           {/* Logo/Title */}
           <motion.h1
-            className="text-8xl md:text-9xl font-bubblegum text-gray-700 mb-8"
+            className="text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-bubblegum text-gray-700 mb-6 sm:mb-8"
             initial={{ scale: 0.5 }}
             animate={{ scale: 1 }}
             transition={{ duration: 0.5, type: "spring", bounce: 0.5 }}
@@ -33,12 +33,12 @@ const Home = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3, duration: 0.8 }}
-            className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 mb-8 shadow-xl"
+            className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 shadow-xl"
           >
-            <p className="text-2xl md:text-3xl font-fredoka font-medium text-gray-700 mb-4">
+            <p className="text-xl sm:text-2xl md:text-3xl font-fredoka font-medium text-gray-700 mb-3 sm:mb-4 leading-relaxed">
               ✨ Create magical coloring books for your kids! ✨
             </p>
-            <p className="text-lg md:text-xl font-fredoka text-gray-600">
+            <p className="text-base sm:text-lg md:text-xl font-fredoka text-gray-600 leading-relaxed">
               Choose a theme, a style, and create a unique personalized 
               coloring book with artificial intelligence. 
               Download instantly as PDF or receive a physical book! 📚🎨
@@ -47,10 +47,10 @@ const Home = () => {
 
           {/* Button */}
           <motion.button
-            whileHover={{ scale: 1.1 }}
+            whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             onClick={() => navigate('/customize')}
-            className="btn-gradient text-white font-fredoka font-bold text-2xl md:text-3xl px-12 py-6 rounded-full shadow-2xl"
+            className="btn-gradient text-white font-fredoka font-bold text-xl sm:text-2xl md:text-3xl px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 rounded-full shadow-2xl w-full sm:w-auto"
           >
             🚀 Create Your Book
           </motion.button>
@@ -60,16 +60,16 @@ const Home = () => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 1, duration: 0.8 }}
-            className="mt-12 flex flex-col items-center cursor-pointer"
+            className="mt-8 sm:mt-12 flex flex-col items-center cursor-pointer"
             onClick={() => scrollToSection('how-it-works')}
           >
-            <p className="text-gray-600 font-fredoka text-lg mb-2">
+            <p className="text-gray-600 font-fredoka text-base sm:text-lg mb-2">
               Learn more - Scroll down
             </p>
             <motion.div
               animate={{ y: [0, 10, 0] }}
               transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
-              className="text-4xl text-hera-purple"
+              className="text-3xl sm:text-4xl text-hera-purple"
             >
               ⬇️
             </motion.div>
@@ -101,41 +101,41 @@ const Home = () => {
       </section>
 
       {/* How It Works Section */}
-      <section id="how-it-works" className="min-h-screen flex items-center justify-center p-8 py-20">
+      <section id="how-it-works" className="min-h-screen flex items-center justify-center p-4 sm:p-6 md:p-8 py-12 sm:py-16 md:py-20">
         <div className="max-w-6xl w-full">
           <motion.h2
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-5xl md:text-6xl font-bubblegum text-gray-700 text-center mb-16"
+            className="text-4xl sm:text-5xl md:text-6xl font-bubblegum text-gray-700 text-center mb-8 sm:mb-12 md:mb-16"
           >
             How It Works 🎯
           </motion.h2>
 
-          <div className="grid md:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
             {/* Step 1 */}
             <motion.div
               initial={{ opacity: 0, y: 50 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.1 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl text-center"
+              className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl text-center"
             >
-              <div className="text-7xl mb-4">1️⃣</div>
-              <h3 className="text-3xl font-fredoka font-bold text-gray-700 mb-4">
+              <div className="text-5xl sm:text-6xl md:text-7xl mb-3 sm:mb-4">1️⃣</div>
+              <h3 className="text-2xl sm:text-3xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
                 Choose Your Theme
               </h3>
-              <div className="bg-gradient-to-br from-purple-200 to-pink-200 rounded-2xl p-6 mb-4 h-48 flex items-center justify-center">
+              <div className="bg-gradient-to-br from-purple-200 to-pink-200 rounded-2xl p-4 sm:p-6 mb-3 sm:mb-4 h-40 sm:h-48 flex items-center justify-center">
                 <div className="grid grid-cols-3 gap-2">
-                  <div className="text-4xl">🦁</div>
-                  <div className="text-4xl">🌳</div>
-                  <div className="text-4xl">🐉</div>
-                  <div className="text-4xl">🧪</div>
-                  <div className="text-4xl">🚒</div>
-                  <div className="text-4xl">🌱</div>
+                  <div className="text-3xl sm:text-4xl">🦁</div>
+                  <div className="text-3xl sm:text-4xl">🌳</div>
+                  <div className="text-3xl sm:text-4xl">🐉</div>
+                  <div className="text-3xl sm:text-4xl">🧪</div>
+                  <div className="text-3xl sm:text-4xl">🚒</div>
+                  <div className="text-3xl sm:text-4xl">🌱</div>
                 </div>
               </div>
-              <p className="text-gray-600 font-fredoka">
+              <p className="text-sm sm:text-base text-gray-600 font-fredoka">
                 Select from Animals, Nature, Fantasy, Science, Transport, and more!
               </p>
             </motion.div>
@@ -146,22 +146,22 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.2 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl text-center"
+              className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl text-center"
             >
-              <div className="text-7xl mb-4">2️⃣</div>
-              <h3 className="text-3xl font-fredoka font-bold text-gray-700 mb-4">
+              <div className="text-5xl sm:text-6xl md:text-7xl mb-3 sm:mb-4">2️⃣</div>
+              <h3 className="text-2xl sm:text-3xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
                 Pick Your Style
               </h3>
-              <div className="bg-gradient-to-br from-blue-200 to-cyan-200 rounded-2xl p-6 mb-4 h-48 flex items-center justify-center">
-                <div className="space-y-2 text-left">
-                  <div className="font-fredoka text-lg">🎨 Ghibli</div>
-                  <div className="font-fredoka text-lg">😄 Cartoon</div>
-                  <div className="font-fredoka text-lg">💥 Comic</div>
-                  <div className="font-fredoka text-lg">⭕ Minimal</div>
-                  <div className="font-fredoka text-lg">✨ Magical</div>
+              <div className="bg-gradient-to-br from-blue-200 to-cyan-200 rounded-2xl p-4 sm:p-6 mb-3 sm:mb-4 h-40 sm:h-48 flex items-center justify-center">
+                <div className="space-y-1 sm:space-y-2 text-left">
+                  <div className="font-fredoka text-base sm:text-lg">🎨 Ghibli</div>
+                  <div className="font-fredoka text-base sm:text-lg">😄 Cartoon</div>
+                  <div className="font-fredoka text-base sm:text-lg">💥 Comic</div>
+                  <div className="font-fredoka text-base sm:text-lg">⭕ Minimal</div>
+                  <div className="font-fredoka text-base sm:text-lg">✨ Magical</div>
                 </div>
               </div>
-              <p className="text-gray-600 font-fredoka">
+              <p className="text-sm sm:text-base text-gray-600 font-fredoka">
                 Choose the art style that fits your child's taste!
               </p>
             </motion.div>
@@ -172,24 +172,24 @@ const Home = () => {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: 0.3 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl text-center"
+              className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-6 sm:p-8 shadow-xl text-center sm:col-span-2 md:col-span-1"
             >
-              <div className="text-7xl mb-4">3️⃣</div>
-              <h3 className="text-3xl font-fredoka font-bold text-gray-700 mb-4">
+              <div className="text-5xl sm:text-6xl md:text-7xl mb-3 sm:mb-4">3️⃣</div>
+              <h3 className="text-2xl sm:text-3xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
                 Customize & Get!
               </h3>
-              <div className="bg-gradient-to-br from-green-200 to-yellow-200 rounded-2xl p-6 mb-4 h-48 flex flex-col items-center justify-center">
-                <div className="text-5xl mb-2">📚</div>
-                <div className="font-fredoka text-lg">10-30 Pages</div>
-                <div className="font-fredoka text-lg">Easy/Medium/Hard</div>
+              <div className="bg-gradient-to-br from-green-200 to-yellow-200 rounded-2xl p-4 sm:p-6 mb-3 sm:mb-4 h-40 sm:h-48 flex flex-col items-center justify-center">
+                <div className="text-4xl sm:text-5xl mb-2">📚</div>
+                <div className="font-fredoka text-base sm:text-lg">10-30 Pages</div>
+                <div className="font-fredoka text-base sm:text-lg">Easy/Medium/Hard</div>
                 <div className="flex gap-2 mt-2">
-                  <div className="w-6 h-6 bg-red-400 rounded"></div>
-                  <div className="w-6 h-6 bg-blue-400 rounded"></div>
-                  <div className="w-6 h-6 bg-green-400 rounded"></div>
-                  <div className="w-6 h-6 bg-yellow-400 rounded"></div>
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-red-400 rounded"></div>
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-blue-400 rounded"></div>
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-green-400 rounded"></div>
+                  <div className="w-5 h-5 sm:w-6 sm:h-6 bg-yellow-400 rounded"></div>
                 </div>
               </div>
-              <p className="text-gray-600 font-fredoka">
+              <p className="text-sm sm:text-base text-gray-600 font-fredoka">
                 Set pages, difficulty, colors, and get your book!
               </p>
             </motion.div>

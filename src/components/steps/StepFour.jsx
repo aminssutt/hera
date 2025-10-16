@@ -98,12 +98,12 @@ const StepFour = ({ selections }) => {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-4 sm:space-y-6">
       <div className="text-center">
-        <h2 className="text-4xl font-fredoka font-bold text-gray-700 mb-4">
+        <h2 className="text-2xl sm:text-3xl md:text-4xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
           🎨 Preview & Finalize Your Book
         </h2>
-        <p className="font-fredoka text-gray-600 text-lg">
+        <p className="font-fredoka text-gray-600 text-base sm:text-lg">
           Generate a preview and choose your book format!
         </p>
       </div>
@@ -115,29 +115,29 @@ const StepFour = ({ selections }) => {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
-            className="bg-gradient-magical text-white rounded-3xl p-6"
+            className="bg-gradient-magical text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6"
           >
-            <h3 className="text-2xl font-bubblegum mb-4 text-center">
+            <h3 className="text-xl sm:text-2xl font-bubblegum mb-3 sm:mb-4 text-center">
               📋 Your Book Details
             </h3>
-            <div className="grid md:grid-cols-2 gap-4 font-fredoka">
-              <div className="bg-white/20 rounded-2xl p-4">
-                <span className="text-sm opacity-80">Themes:</span>
-                <p className="text-lg font-bold">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 font-fredoka">
+              <div className="bg-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4">
+                <span className="text-xs sm:text-sm opacity-80">Themes:</span>
+                <p className="text-base sm:text-lg font-bold">
                   {selections.theme.length > 0 ? selections.theme.join(', ') : 'Not selected'}
                 </p>
               </div>
-              <div className="bg-white/20 rounded-2xl p-4">
-                <span className="text-sm opacity-80">Style:</span>
-                <p className="text-lg font-bold">{selections.topic || 'Not selected'}</p>
+              <div className="bg-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4">
+                <span className="text-xs sm:text-sm opacity-80">Style:</span>
+                <p className="text-base sm:text-lg font-bold">{selections.topic || 'Not selected'}</p>
               </div>
-              <div className="bg-white/20 rounded-2xl p-4">
-                <span className="text-sm opacity-80">Pages:</span>
-                <p className="text-lg font-bold">{selections.pages} pages</p>
+              <div className="bg-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4">
+                <span className="text-xs sm:text-sm opacity-80">Pages:</span>
+                <p className="text-base sm:text-lg font-bold">{selections.pages} pages</p>
               </div>
-              <div className="bg-white/20 rounded-2xl p-4">
-                <span className="text-sm opacity-80">Difficulty:</span>
-                <p className="text-lg font-bold">{selections.difficulty}</p>
+              <div className="bg-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4">
+                <span className="text-xs sm:text-sm opacity-80">Difficulty:</span>
+                <p className="text-base sm:text-lg font-bold">{selections.difficulty}</p>
               </div>
             </div>
           </motion.div>
@@ -206,16 +206,16 @@ const StepFour = ({ selections }) => {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-red-100 border-4 border-red-300 rounded-3xl p-6 text-center"
+          className="bg-red-100 border-2 sm:border-4 border-red-300 rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center"
         >
-          <div className="text-5xl mb-4">❌</div>
-          <h3 className="text-2xl font-fredoka font-bold text-red-700 mb-2">
+          <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">❌</div>
+          <h3 className="text-xl sm:text-2xl font-fredoka font-bold text-red-700 mb-2">
             Oops! Something went wrong
           </h3>
-          <p className="font-fredoka text-red-600 mb-4">{error}</p>
+          <p className="font-fredoka text-red-600 mb-3 sm:mb-4 text-sm sm:text-base">{error}</p>
           <button
             onClick={generatePreview}
-            className="bg-red-500 hover:bg-red-600 text-white font-fredoka font-bold px-8 py-3 rounded-2xl transition-all"
+            className="bg-red-500 hover:bg-red-600 text-white font-fredoka font-bold px-6 sm:px-8 py-2 sm:py-3 rounded-xl sm:rounded-2xl transition-all text-sm sm:text-base"
           >
             Try Again
           </button>
@@ -229,23 +229,23 @@ const StepFour = ({ selections }) => {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             exit={{ opacity: 0 }}
-            className="space-y-6"
+            className="space-y-4 sm:space-y-6"
           >
             {/* Preview Image - Compact */}
-            <div className="bg-white rounded-3xl p-6 shadow-xl">
-              <h3 className="text-2xl font-bubblegum text-gray-700 text-center mb-4">
+            <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl">
+              <h3 className="text-xl sm:text-2xl font-bubblegum text-gray-700 text-center mb-3 sm:mb-4">
                 🌟 Preview Sample Page
               </h3>
               
-              <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-3 max-w-md mx-auto">
+              <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl sm:rounded-2xl p-2 sm:p-3 max-w-md mx-auto">
                 <img
                   src={generatedImage}
                   alt="Generated coloring page preview"
-                  className="w-full h-auto rounded-xl shadow-lg"
+                  className="w-full h-auto rounded-lg sm:rounded-xl shadow-lg"
                 />
               </div>
 
-              <p className="text-center font-fredoka text-gray-600 mt-4 text-sm">
+              <p className="text-center font-fredoka text-gray-600 mt-3 sm:mt-4 text-xs sm:text-sm">
                 This is a preview of your coloring book style!
               </p>
             </div>

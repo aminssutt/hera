@@ -138,7 +138,7 @@ def stripe_webhook():
             
             # STEP 1: Send immediate payment confirmation email
             print("📨 Step 1: Sending payment confirmation email...")
-            from email_service_gmail import send_payment_confirmation
+            from email_service import send_payment_confirmation
             
             order_details = {
                 'format': format_type,
