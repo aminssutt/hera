@@ -9,7 +9,7 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 from pdf_generator import create_coloring_book_pdf, combine_bw_and_colored
-from email_service_gmail import send_pdf_email
+from email_service import send_pdf_email
 from PIL import Image
 import io
 
@@ -91,7 +91,7 @@ def generate_single_page(theme, topic, difficulty, is_colored=False, colors=None
             prompt=prompt,
             config=types.GenerateImagesConfig(
                 number_of_images=1,
-                safety_filter_level='block_some',
+                safety_filter_level='block_low_and_above',
                 person_generation='allow_adult',
                 aspect_ratio='1:1',
                 output_mime_type='image/png'
@@ -194,11 +194,12 @@ def generate_complete_book(session_data, preview_image_base64=None):
         pdf_path = os.path.join(PDF_FOLDER, pdf_filename)
         
         book_details = {
-            'theme': ', '.join(theme),
-            'topic': topic,
+            'theme': theme if isinstance(theme, str) else ', '.join(theme),
+            'style': topic,
             'pages': total_pages,
             'difficulty': difficulty,
-            'bookType': book_type
+            'book_type': book_type,
+            'format': format_type
         }
         
         if book_type == 'colored' and colored_images:

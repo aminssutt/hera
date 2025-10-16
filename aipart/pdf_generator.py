@@ -2,8 +2,11 @@ import os
 from reportlab.lib.pagesizes import letter, A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
 from PIL import Image
 import io
+import requests
 
 
 def create_coloring_book_pdf(images, output_path, book_details):
@@ -43,21 +46,30 @@ def create_coloring_book_pdf(images, output_path, book_details):
             img_width, img_height = pil_img.size
             aspect_ratio = img_width / img_height
             
-            # Add margins
-            margin = 36  # 0.5 inch margin
-            max_width = page_width - (2 * margin)
-            max_height = page_height - (2 * margin)
+            # Add generous padding around images (1 inch on all sides)
+            padding = 72  # 1 inch padding
+            max_width = page_width - (2 * padding)
+            max_height = page_height - (2 * padding)
             
+            # Calculate new dimensions while maintaining aspect ratio
             if aspect_ratio > 1:
                 # Landscape orientation
                 new_width = min(max_width, img_width)
                 new_height = new_width / aspect_ratio
+                # If height exceeds max, recalculate based on height
+                if new_height > max_height:
+                    new_height = max_height
+                    new_width = new_height * aspect_ratio
             else:
                 # Portrait orientation
                 new_height = min(max_height, img_height)
                 new_width = new_height * aspect_ratio
+                # If width exceeds max, recalculate based on width
+                if new_width > max_width:
+                    new_width = max_width
+                    new_height = new_width / aspect_ratio
             
-            # Center the image
+            # Center the image on the page
             x = (page_width - new_width) / 2
             y = (page_height - new_height) / 2
             
@@ -91,32 +103,145 @@ def create_coloring_book_pdf(images, output_path, book_details):
 def add_title_page(canvas_obj, book_details, width, height):
     """Add a decorative title page to the coloring book"""
     try:
-        # Background gradient effect (using rectangles)
-        canvas_obj.setFillColorRGB(0.91, 0.57, 0.78)  # Hera pink
-        canvas_obj.rect(0, 0, width, height, fill=True, stroke=False)
+        # Try to use Fredoka font (like the website)
+        try:
+            # Download Fredoka font from Google Fonts if not already cached
+            font_cache_path = 'fredoka.ttf'
+            if not os.path.exists(font_cache_path):
+                font_url = 'https://github.com/googlefonts/fredoka/raw/main/fonts/ttf/Fredoka-SemiBold.ttf'
+                response = requests.get(font_url, timeout=5)
+                if response.status_code == 200:
+                    with open(font_cache_path, 'wb') as f:
+                        f.write(response.content)
+            
+            if os.path.exists(font_cache_path):
+                pdfmetrics.registerFont(TTFont('Fredoka', font_cache_path))
+                title_font = 'Fredoka'
+            else:
+                title_font = 'Helvetica-Bold'
+        except:
+            title_font = 'Helvetica-Bold'
         
-        # Title
+        # Background - Elegant gradient effect
+        # Top gradient (pink)
+        canvas_obj.setFillColorRGB(0.91, 0.57, 0.78)  # Hera pink #E891C7
+        canvas_obj.rect(0, height * 0.6, width, height * 0.4, fill=True, stroke=False)
+        
+        # Bottom gradient (lighter pink)
+        canvas_obj.setFillColorRGB(0.98, 0.89, 0.95)  # Light pink
+        canvas_obj.rect(0, 0, width, height * 0.6, fill=True, stroke=False)
+        
+        # Add decorative circles
+        canvas_obj.setFillColorRGB(1, 1, 1, alpha=0.2)
+        canvas_obj.circle(width * 0.15, height * 0.85, 60, fill=True, stroke=False)
+        canvas_obj.circle(width * 0.85, height * 0.20, 80, fill=True, stroke=False)
+        
+        # HERA logo/title
         canvas_obj.setFillColorRGB(1, 1, 1)  # White text
-        canvas_obj.setFont("Helvetica-Bold", 36)
-        canvas_obj.drawCentredString(width / 2, height - 150, "My Coloring Book")
+        canvas_obj.setFont(title_font, 56)
+        canvas_obj.drawCentredString(width / 2, height - 120, "HERA")
         
-        # Subtitle
-        canvas_obj.setFont("Helvetica", 18)
+        # Tagline
+        canvas_obj.setFont("Helvetica-Oblique", 14)
+        canvas_obj.setFillColorRGB(1, 1, 1, alpha=0.9)
+        canvas_obj.drawCentredString(width / 2, height - 150, "Your personalized coloring book")
+        
+        # Decorative line
+        canvas_obj.setStrokeColorRGB(1, 1, 1)
+        canvas_obj.setLineWidth(2)
+        canvas_obj.line(width * 0.35, height - 170, width * 0.65, height - 170)
+        
+        # Book Details Section
+        y_position = height - 240
+        
+        # Theme
+        canvas_obj.setFillColorRGB(0.3, 0.3, 0.3)  # Dark gray
+        canvas_obj.setFont("Helvetica-Bold", 16)
+        canvas_obj.drawCentredString(width / 2, y_position, "📚 Your Book Details")
+        
+        y_position -= 35
+        canvas_obj.setFont("Helvetica", 12)
+        
+        # Theme
         theme = book_details.get('theme', 'Custom')
         if isinstance(theme, list):
             theme = ', '.join(theme)
-        canvas_obj.drawCentredString(width / 2, height - 200, f"Theme: {theme}")
+        canvas_obj.setFont("Helvetica-Bold", 11)
+        canvas_obj.drawString(width * 0.25, y_position, "Theme:")
+        canvas_obj.setFont("Helvetica", 11)
+        canvas_obj.drawString(width * 0.40, y_position, theme)
         
-        # Details
-        canvas_obj.setFont("Helvetica", 14)
-        pages = book_details.get('pages', 24)
+        y_position -= 25
+        
+        # Style
+        style = book_details.get('style', 'Cartoon')
+        canvas_obj.setFont("Helvetica-Bold", 11)
+        canvas_obj.drawString(width * 0.25, y_position, "Style:")
+        canvas_obj.setFont("Helvetica", 11)
+        canvas_obj.drawString(width * 0.40, y_position, style)
+        
+        y_position -= 25
+        
+        # Difficulty
         difficulty = book_details.get('difficulty', 'Easy')
-        canvas_obj.drawCentredString(width / 2, height - 250, f"{pages} pages • {difficulty} difficulty")
+        canvas_obj.setFont("Helvetica-Bold", 11)
+        canvas_obj.drawString(width * 0.25, y_position, "Difficulty:")
+        canvas_obj.setFont("Helvetica", 11)
+        canvas_obj.drawString(width * 0.40, y_position, difficulty)
+        
+        y_position -= 25
+        
+        # Number of pages
+        pages = book_details.get('pages', 24)
+        book_type = book_details.get('book_type', 'blackwhite')
+        if book_type == 'colored':
+            pages_text = f"{pages} colored pages"
+        elif book_type == 'both':
+            pages_text = f"{pages} pages (B&W + Colored)"
+        else:
+            pages_text = f"{pages} black & white pages"
+        
+        canvas_obj.setFont("Helvetica-Bold", 11)
+        canvas_obj.drawString(width * 0.25, y_position, "Pages:")
+        canvas_obj.setFont("Helvetica", 11)
+        canvas_obj.drawString(width * 0.40, y_position, pages_text)
+        
+        y_position -= 25
+        
+        # Format
+        format_type = book_details.get('format', 'pdf')
+        canvas_obj.setFont("Helvetica-Bold", 11)
+        canvas_obj.drawString(width * 0.25, y_position, "Format:")
+        canvas_obj.setFont("Helvetica", 11)
+        canvas_obj.drawString(width * 0.40, y_position, format_type.upper())
+        
+        # Description box
+        y_position -= 60
+        canvas_obj.setFillColorRGB(0.91, 0.57, 0.78, alpha=0.15)  # Light pink background
+        canvas_obj.roundRect(width * 0.15, y_position - 80, width * 0.7, 100, 10, fill=True, stroke=False)
+        
+        canvas_obj.setFillColorRGB(0.3, 0.3, 0.3)
+        canvas_obj.setFont("Helvetica-Oblique", 11)
+        
+        description_lines = [
+            "✨ Each page is uniquely generated by AI",
+            "🎨 Perfect for relaxation and creativity",
+            "💝 Made with love, just for you"
+        ]
+        
+        y_desc = y_position - 30
+        for line in description_lines:
+            canvas_obj.drawCentredString(width / 2, y_desc, line)
+            y_desc -= 25
         
         # Footer message
-        canvas_obj.setFont("Helvetica-Oblique", 12)
-        canvas_obj.drawCentredString(width / 2, 100, "Created with ❤️ by Hera")
-        canvas_obj.drawCentredString(width / 2, 80, "Have fun coloring!")
+        canvas_obj.setFillColorRGB(0.91, 0.57, 0.78)
+        canvas_obj.setFont("Helvetica-Bold", 12)
+        canvas_obj.drawCentredString(width / 2, 80, "🖍️ Happy Coloring! 🖍️")
+        
+        canvas_obj.setFillColorRGB(0.5, 0.5, 0.5)
+        canvas_obj.setFont("Helvetica", 9)
+        canvas_obj.drawCentredString(width / 2, 50, "www.hera-coloring.com • Created with AI")
         
         # Start new page for actual content
         canvas_obj.showPage()
