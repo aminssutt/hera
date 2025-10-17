@@ -85,11 +85,11 @@ def generate_single_page(theme, topic, difficulty, is_colored=False, colors=None
         
         prompt = build_prompt(theme, topic, difficulty, is_colored, colors)
         
-        # Generate image with Google Imagen
-        response = client.models.generate_images(
+        # Generate image with Google Imagen - note: generate_image (singular)
+        response = client.models.generate_image(
             model='imagen-4.0-generate-001',
             prompt=prompt,
-            config=types.GenerateImagesConfig(
+            config=types.GenerateImageConfig(
                 number_of_images=1,
                 safety_filter_level='block_low_and_above',
                 person_generation='allow_adult',

@@ -77,19 +77,19 @@ def generate_image_api(prompt):
     try:
         print(f"Generating image with prompt: {prompt}")
         
-        # Using Imagen 4.0 as in the original code
-        response = client.models.generate_images(
+        # Using Imagen 4.0 - note: generate_image (singular) not generate_images
+        response = client.models.generate_image(
             model='imagen-4.0-generate-001',
             prompt=prompt,
-            config=types.GenerateImagesConfig(
+            config=types.GenerateImageConfig(
                 number_of_images=1,
             )
         )
         
-        # Get the first generated image
-        for generated_image in response.generated_images:
+        # Get the generated image
+        if response.generated_images:
             print("Image generated successfully!")
-            return generated_image.image.image_bytes
+            return response.generated_images[0].image.image_bytes
         
         print("No image was generated")
         return None
