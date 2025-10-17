@@ -91,8 +91,8 @@ def generate_single_page(theme, topic, difficulty, is_colored=False, colors=None
             prompt=prompt,
             config=types.GenerateImageConfig(
                 number_of_images=1,
-                safety_filter_level='block_low_and_above',
-                person_generation='allow_adult',
+                safety_filter_level='BLOCK_LOW_AND_ABOVE',
+                person_generation='ALLOW_ADULT',
                 aspect_ratio='1:1',
                 output_mime_type='image/png'
             )
