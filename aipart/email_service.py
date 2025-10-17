@@ -1,27 +1,24 @@
 """
-Email service using Gmail SMTP (FREE alternative to Resend)
-Supports up to 500 emails/day for free
+Email service using SendGrid API (FREE - 100 emails/day)
+Works on Render Free tier (no SMTP port blocking issues)
 """
 import os
-import smtplib
-from email.mime.multipart import MIMEMultipart
-from email.mime.text import MIMEText
-from email.mime.application import MIMEApplication
+import base64
+from sendgrid import SendGridAPIClient
+from sendgrid.helpers.mail import Mail, Attachment, FileContent, FileName, FileType, Disposition
 from dotenv import load_dotenv
 
 # Load environment variables
 load_dotenv()
 
-# Gmail SMTP Configuration
-GMAIL_EMAIL = os.getenv('GMAIL_EMAIL')  # Your Gmail address
-GMAIL_APP_PASSWORD = os.getenv('GMAIL_APP_PASSWORD')  # Gmail App Password (not regular password!)
-SMTP_SERVER = 'smtp.gmail.com'
-SMTP_PORT = 587
+# SendGrid Configuration
+SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
+FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'noreply@hera.work')  # Your verified sender email
 
 
-def send_email_via_gmail(to_email, subject, html_content, attachment_path=None):
+def send_email_via_sendgrid(to_email, subject, html_content, attachment_path=None):
     """
-    Send email using Gmail SMTP
+    Send email using SendGrid API
     
     Args:
         to_email (str): Recipient email
@@ -34,32 +31,34 @@ def send_email_via_gmail(to_email, subject, html_content, attachment_path=None):
     """
     try:
         # Create message
-        msg = MIMEMultipart('alternative')
-        msg['From'] = GMAIL_EMAIL
-        msg['To'] = to_email
-        msg['Subject'] = subject
-        
-        # Attach HTML content
-        html_part = MIMEText(html_content, 'html')
-        msg.attach(html_part)
+        message = Mail(
+            from_email=FROM_EMAIL,
+            to_emails=to_email,
+            subject=subject,
+            html_content=html_content
+        )
         
         # Attach file if provided
         if attachment_path and os.path.exists(attachment_path):
             with open(attachment_path, 'rb') as f:
                 file_data = f.read()
+                encoded_file = base64.b64encode(file_data).decode()
+                
                 filename = os.path.basename(attachment_path)
                 
-                attachment = MIMEApplication(file_data, _subtype='pdf')
-                attachment.add_header('Content-Disposition', 'attachment', filename=filename)
-                msg.attach(attachment)
+                attached_file = Attachment(
+                    FileContent(encoded_file),
+                    FileName(filename),
+                    FileType('application/pdf'),
+                    Disposition('attachment')
+                )
+                message.attachment = attached_file
         
-        # Connect to Gmail SMTP server
-        with smtplib.SMTP(SMTP_SERVER, SMTP_PORT) as server:
-            server.starttls()  # Secure connection
-            server.login(GMAIL_EMAIL, GMAIL_APP_PASSWORD)
-            server.send_message(msg)
+        # Send email via SendGrid API
+        sg = SendGridAPIClient(SENDGRID_API_KEY)
+        response = sg.send(message)
         
-        print(f"✅ Email sent successfully to {to_email}")
+        print(f"✅ Email sent successfully to {to_email} (Status: {response.status_code})")
         return True
         
     except Exception as e:
@@ -164,7 +163,7 @@ def send_payment_confirmation(to_email, order_details):
     </html>
     """
     
-    return send_email_via_gmail(to_email, subject, html_content)
+    return send_email_via_sendgrid(to_email, subject, html_content)
 
 
 def send_pdf_email(to_email, pdf_path, book_details):
@@ -248,7 +247,7 @@ def send_pdf_email(to_email, pdf_path, book_details):
     </html>
     """
     
-    return send_email_via_gmail(to_email, subject, html_content, pdf_path)
+    return send_email_via_sendgrid(to_email, subject, html_content, pdf_path)
 
 
 def send_physical_book_confirmation(to_email, order_details):
@@ -318,4 +317,4 @@ def send_physical_book_confirmation(to_email, order_details):
     </html>
     """
     
-    return send_email_via_gmail(to_email, subject, html_content)
+    return send_email_via_sendgrid(to_email, subject, html_content)
