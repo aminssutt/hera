@@ -78,45 +78,89 @@ Perfect for coloring with crayons or markers. High contrast, clear lines, child-
     return prompt
 
 
-def generate_single_page(theme, topic, difficulty, is_colored=False, colors=None, page_num=1):
-    """Generate a single coloring book page"""
+def generate_single_page(theme, topic, difficulty, is_colored=False, colors=None, page_num=1, source_image_path=None):
+    """Generate a single coloring book page or color an existing B&W page"""
     try:
-        print(f"  🎨 Generating page {page_num} ({'colored' if is_colored else 'B&W'})...")
-        
-        prompt = build_prompt(theme, topic, difficulty, is_colored, colors)
-        
-        # Generate image with Google Imagen - note: generate_image (singular)
-        response = client.models.generate_image(
-            model='imagen-4.0-generate-001',
-            prompt=prompt,
-            config=types.GenerateImageConfig(
-                number_of_images=1,
-                safety_filter_level='BLOCK_LOW_AND_ABOVE',
-                person_generation='ALLOW_ADULT',
-                aspect_ratio='1:1',
-                output_mime_type='image/png'
+        if is_colored and source_image_path:
+            # COLORIER une image B&W existante avec Gemini 2.5 Flash
+            print(f"  � Coloring page {page_num} with Gemini 2.5 Flash...")
+            
+            # Ouvrir l'image B&W source
+            bw_image = Image.open(source_image_path)
+            
+            # Construire le prompt de coloration
+            color_list = ', '.join(colors) if colors else 'vibrant child-friendly colors'
+            coloring_prompt = (
+                f"Color in this black and white coloring book illustration neatly using the following colors: {color_list}. "
+                "Do not change the line art. Stay within the lines. Use flat, solid colors without shading or texture. "
+                "Make it bright, fun, and perfect for kids!"
             )
-        )
+            
+            # Appeler Gemini 2.5 Flash pour colorier
+            response = client.models.generate_content(
+                model="gemini-2.5-flash-image",
+                contents=[coloring_prompt, bw_image]
+            )
+            
+            # Extraire l'image colorée
+            colored_image = None
+            for part in response.candidates[0].content.parts:
+                if part.inline_data is not None:
+                    colored_image = Image.open(io.BytesIO(part.inline_data.data))
+                    break
+            
+            if colored_image:
+                # Sauvegarder l'image colorée
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f"page_{page_num}_colored_{timestamp}.png"
+                filepath = os.path.join(GENERATED_FOLDER, filename)
+                colored_image.save(filepath)
+                print(f"    ✅ Page {page_num} colored: {filename}")
+                return filepath
+            else:
+                print(f"    ❌ Failed to color page {page_num}")
+                return None
         
-        if response.generated_images:
-            image_data = response.generated_images[0].image.image_bytes
-            
-            # Save to file
-            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-            filename = f"page_{page_num}_{'colored' if is_colored else 'bw'}_{timestamp}.png"
-            filepath = os.path.join(GENERATED_FOLDER, filename)
-            
-            with open(filepath, 'wb') as f:
-                f.write(image_data)
-            
-            print(f"    ✅ Page {page_num} generated: {filename}")
-            return filepath
         else:
-            print(f"    ❌ Failed to generate page {page_num}")
-            return None
+            # GÉNÉRER une nouvelle page B&W avec Imagen
+            print(f"  🎨 Generating B&W page {page_num} with Imagen 4.0...")
+            
+            prompt = build_prompt(theme, topic, difficulty, is_colored=False, colors=None)
+            
+            # Generate image with Google Imagen
+            response = client.models.generate_image(
+                model='imagen-4.0-generate-001',
+                prompt=prompt,
+                config=types.GenerateImageConfig(
+                    number_of_images=1,
+                    safety_filter_level='BLOCK_LOW_AND_ABOVE',
+                    person_generation='ALLOW_ADULT',
+                    aspect_ratio='1:1',
+                    output_mime_type='image/png'
+                )
+            )
+            
+            if response.generated_images:
+                image_data = response.generated_images[0].image.image_bytes
+                
+                # Save to file
+                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                filename = f"page_{page_num}_bw_{timestamp}.png"
+                filepath = os.path.join(GENERATED_FOLDER, filename)
+                
+                with open(filepath, 'wb') as f:
+                    f.write(image_data)
+                
+                print(f"    ✅ B&W page {page_num} generated: {filename}")
+                return filepath
+            else:
+                print(f"    ❌ Failed to generate page {page_num}")
+                return None
             
     except Exception as e:
         print(f"    ❌ Error generating page {page_num}: {str(e)}")
+        import traceback
+        traceback.print_exc()
         return None
 
 
@@ -169,23 +213,28 @@ def generate_complete_book(session_data, preview_image_base64=None):
                     bw_images.append(img_path)
         
         else:
-            # Colored edition: half B&W, half colored
-            bw_count = total_pages // 2
-            colored_count = total_pages // 2
-            
-            print(f"🖤 Generating {bw_count} black & white pages...")
-            for i in range(bw_count):
+            # Colored edition: Generate B&W first, then color THE SAME images
+            print(f"🖤 Step 1: Generating {total_pages} black & white pages...")
+            bw_source_images = []
+            for i in range(total_pages):
                 page_num = i + 1
                 img_path = generate_single_page(theme, topic, difficulty, is_colored=False, page_num=page_num)
                 if img_path:
+                    bw_source_images.append(img_path)
                     bw_images.append(img_path)
             
-            print(f"🌈 Generating {colored_count} colored pages...")
-            for i in range(colored_count):
-                page_num = bw_count + i + 1
-                img_path = generate_single_page(theme, topic, difficulty, is_colored=True, colors=colors, page_num=page_num)
-                if img_path:
-                    colored_images.append(img_path)
+            print(f"\n🌈 Step 2: Coloring the same {len(bw_source_images)} pages with Gemini...")
+            for i, bw_img_path in enumerate(bw_source_images):
+                page_num = i + 1
+                colored_path = generate_single_page(
+                    theme, topic, difficulty, 
+                    is_colored=True, 
+                    colors=colors, 
+                    page_num=page_num,
+                    source_image_path=bw_img_path  # Colorier cette image B&W spécifique
+                )
+                if colored_path:
+                    colored_images.append(colored_path)
         
         # Generate PDF
         print(f"\n📄 Compiling PDF...")

@@ -273,20 +273,19 @@ const StepFour = ({ selections }) => {
                   <div className="text-3xl mt-2">$9.99</div>
                 </motion.button>
 
-                <motion.button
-                  whileHover={{ scale: 1.03 }}
-                  whileTap={{ scale: 0.97 }}
-                  onClick={() => setFormat('physical')}
-                  className={`p-6 rounded-2xl font-fredoka font-bold text-xl transition-all ${
-                    format === 'physical'
-                      ? 'bg-gradient-magical text-white shadow-lg'
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  <div className="text-4xl mb-2">📚</div>
-                  <div>Physical Book</div>
-                  <div className="text-3xl mt-2">$24.99</div>
-                </motion.button>
+                <div className="relative">
+                  <motion.button
+                    disabled
+                    className="w-full p-6 rounded-2xl font-fredoka font-bold text-xl transition-all bg-gray-200 text-gray-400 cursor-not-allowed opacity-60"
+                  >
+                    <div className="text-4xl mb-2">📚</div>
+                    <div>Physical Book</div>
+                    <div className="text-3xl mt-2">$24.99</div>
+                  </motion.button>
+                  <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg">
+                    🚧 Coming Soon
+                  </div>
+                </div>
               </div>
 
               {/* Book Type Selection */}
@@ -324,7 +323,7 @@ const StepFour = ({ selections }) => {
                   <div className="text-4xl mb-2">🌈</div>
                   <div className="font-bold text-lg mb-2">Colored Version</div>
                   <div className="text-sm opacity-80">
-                    {getBlackWhitePages()} B&W + {getColoredPages()} colored ({selections.pages} total)
+                    {Math.floor(selections.pages / 2)} B&W + {Math.floor(selections.pages / 2)} colored ({selections.pages} total)
                   </div>
                 </motion.button>
               </div>
@@ -351,7 +350,7 @@ const StepFour = ({ selections }) => {
                     <p className="text-blue-700">
                       Your book will contain <strong>{selections.pages} total pages</strong>:
                       <br />• <strong>{getBlackWhitePages()} black & white pages</strong> to color
-                      <br />• <strong>{getColoredPages()} colored example pages</strong> using your chosen color palette as inspiration!
+                      <br />• <strong>{getColoredPages()} colored example pages</strong> - the SAME pages but colored as inspiration!
                     </p>
                   )}
                 </div>

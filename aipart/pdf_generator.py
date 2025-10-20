@@ -101,153 +101,70 @@ def create_coloring_book_pdf(images, output_path, book_details):
 
 
 def add_title_page(canvas_obj, book_details, width, height):
-    """Add a decorative title page to the coloring book"""
+    """Add a decorative title page using frontpage.png"""
     try:
-        # Try to use Fredoka font (like the website)
-        try:
-            # Download Fredoka font from Google Fonts if not already cached
-            font_cache_path = 'fredoka.ttf'
-            if not os.path.exists(font_cache_path):
-                font_url = 'https://github.com/googlefonts/fredoka/raw/main/fonts/ttf/Fredoka-SemiBold.ttf'
-                response = requests.get(font_url, timeout=5)
-                if response.status_code == 200:
-                    with open(font_cache_path, 'wb') as f:
-                        f.write(response.content)
-            
-            if os.path.exists(font_cache_path):
-                pdfmetrics.registerFont(TTFont('Fredoka', font_cache_path))
-                title_font = 'Fredoka'
-            else:
-                title_font = 'Helvetica-Bold'
-        except:
-            title_font = 'Helvetica-Bold'
+        # Path to frontpage image
+        frontpage_path = os.path.join(os.path.dirname(__file__), '..', 'images', 'frontpage.png')
         
-        # Background - Elegant gradient effect
-        # Top gradient (pink)
-        canvas_obj.setFillColorRGB(0.91, 0.57, 0.78)  # Hera pink #E891C7
-        canvas_obj.rect(0, height * 0.6, width, height * 0.4, fill=True, stroke=False)
+        # If frontpage doesn't exist, try alternative path
+        if not os.path.exists(frontpage_path):
+            frontpage_path = os.path.join(os.path.dirname(__file__), '..', 'public', 'images', 'frontpage.png')
         
-        # Bottom gradient (lighter pink)
-        canvas_obj.setFillColorRGB(0.98, 0.89, 0.95)  # Light pink
-        canvas_obj.rect(0, 0, width, height * 0.6, fill=True, stroke=False)
-        
-        # Add decorative circles
-        canvas_obj.setFillColorRGB(1, 1, 1, alpha=0.2)
-        canvas_obj.circle(width * 0.15, height * 0.85, 60, fill=True, stroke=False)
-        canvas_obj.circle(width * 0.85, height * 0.20, 80, fill=True, stroke=False)
-        
-        # HERA logo/title
-        canvas_obj.setFillColorRGB(1, 1, 1)  # White text
-        canvas_obj.setFont(title_font, 56)
-        canvas_obj.drawCentredString(width / 2, height - 120, "HERA")
-        
-        # Tagline
-        canvas_obj.setFont("Helvetica-Oblique", 14)
-        canvas_obj.setFillColorRGB(1, 1, 1, alpha=0.9)
-        canvas_obj.drawCentredString(width / 2, height - 150, "Your personalized coloring book")
-        
-        # Decorative line
-        canvas_obj.setStrokeColorRGB(1, 1, 1)
-        canvas_obj.setLineWidth(2)
-        canvas_obj.line(width * 0.35, height - 170, width * 0.65, height - 170)
-        
-        # Book Details Section
-        y_position = height - 240
-        
-        # Theme
-        canvas_obj.setFillColorRGB(0.3, 0.3, 0.3)  # Dark gray
-        canvas_obj.setFont("Helvetica-Bold", 16)
-        canvas_obj.drawCentredString(width / 2, y_position, "📚 Your Book Details")
-        
-        y_position -= 35
-        canvas_obj.setFont("Helvetica", 12)
-        
-        # Theme
-        theme = book_details.get('theme', 'Custom')
-        if isinstance(theme, list):
-            theme = ', '.join(theme)
-        canvas_obj.setFont("Helvetica-Bold", 11)
-        canvas_obj.drawString(width * 0.25, y_position, "Theme:")
-        canvas_obj.setFont("Helvetica", 11)
-        canvas_obj.drawString(width * 0.40, y_position, theme)
-        
-        y_position -= 25
-        
-        # Style
-        style = book_details.get('style', 'Cartoon')
-        canvas_obj.setFont("Helvetica-Bold", 11)
-        canvas_obj.drawString(width * 0.25, y_position, "Style:")
-        canvas_obj.setFont("Helvetica", 11)
-        canvas_obj.drawString(width * 0.40, y_position, style)
-        
-        y_position -= 25
-        
-        # Difficulty
-        difficulty = book_details.get('difficulty', 'Easy')
-        canvas_obj.setFont("Helvetica-Bold", 11)
-        canvas_obj.drawString(width * 0.25, y_position, "Difficulty:")
-        canvas_obj.setFont("Helvetica", 11)
-        canvas_obj.drawString(width * 0.40, y_position, difficulty)
-        
-        y_position -= 25
-        
-        # Number of pages
-        pages = book_details.get('pages', 24)
-        book_type = book_details.get('book_type', 'blackwhite')
-        if book_type == 'colored':
-            pages_text = f"{pages} colored pages"
-        elif book_type == 'both':
-            pages_text = f"{pages} pages (B&W + Colored)"
+        if not os.path.exists(frontpage_path):
+            print(f"⚠️ Warning: frontpage.png not found, creating text-based title page")
+            # Fallback to simple text title page
+            canvas_obj.setFillColorRGB(0.91, 0.57, 0.78)  # Hera pink
+            canvas_obj.rect(0, 0, width, height, fill=True, stroke=False)
+            canvas_obj.setFillColorRGB(1, 1, 1)
+            canvas_obj.setFont("Helvetica-Bold", 56)
+            canvas_obj.drawCentredString(width / 2, height / 2, "HERA")
+            canvas_obj.setFont("Helvetica", 20)
+            canvas_obj.drawCentredString(width / 2, height / 2 - 50, "Your Personalized Coloring Book")
         else:
-            pages_text = f"{pages} black & white pages"
+            # Use frontpage.png as cover
+            print(f"✅ Using frontpage.png as cover: {frontpage_path}")
+            
+            # Open and resize frontpage to fit page
+            pil_img = Image.open(frontpage_path)
+            
+            # Convert to RGB if necessary
+            if pil_img.mode != 'RGB':
+                pil_img = pil_img.convert('RGB')
+            
+            # Calculate dimensions to fit page while maintaining aspect ratio
+            img_width, img_height = pil_img.size
+            aspect_ratio = img_width / img_height
+            
+            # Scale to fill entire page
+            if aspect_ratio > width / height:
+                # Image is wider - fit to height
+                new_height = height
+                new_width = height * aspect_ratio
+                x = (width - new_width) / 2
+                y = 0
+            else:
+                # Image is taller - fit to width
+                new_width = width
+                new_height = width / aspect_ratio
+                x = 0
+                y = (height - new_height) / 2
+            
+            # Convert PIL image to ImageReader for reportlab
+            img_buffer = io.BytesIO()
+            pil_img.save(img_buffer, format='PNG')
+            img_buffer.seek(0)
+            img_reader = ImageReader(img_buffer)
+            
+            # Draw frontpage as full cover
+            canvas_obj.drawImage(img_reader, x, y, width=new_width, height=new_height)
         
-        canvas_obj.setFont("Helvetica-Bold", 11)
-        canvas_obj.drawString(width * 0.25, y_position, "Pages:")
-        canvas_obj.setFont("Helvetica", 11)
-        canvas_obj.drawString(width * 0.40, y_position, pages_text)
-        
-        y_position -= 25
-        
-        # Format
-        format_type = book_details.get('format', 'pdf')
-        canvas_obj.setFont("Helvetica-Bold", 11)
-        canvas_obj.drawString(width * 0.25, y_position, "Format:")
-        canvas_obj.setFont("Helvetica", 11)
-        canvas_obj.drawString(width * 0.40, y_position, format_type.upper())
-        
-        # Description box
-        y_position -= 60
-        canvas_obj.setFillColorRGB(0.91, 0.57, 0.78, alpha=0.15)  # Light pink background
-        canvas_obj.roundRect(width * 0.15, y_position - 80, width * 0.7, 100, 10, fill=True, stroke=False)
-        
-        canvas_obj.setFillColorRGB(0.3, 0.3, 0.3)
-        canvas_obj.setFont("Helvetica-Oblique", 11)
-        
-        description_lines = [
-            "✨ Each page is uniquely generated by AI",
-            "🎨 Perfect for relaxation and creativity",
-            "💝 Made with love, just for you"
-        ]
-        
-        y_desc = y_position - 30
-        for line in description_lines:
-            canvas_obj.drawCentredString(width / 2, y_desc, line)
-            y_desc -= 25
-        
-        # Footer message
-        canvas_obj.setFillColorRGB(0.91, 0.57, 0.78)
-        canvas_obj.setFont("Helvetica-Bold", 12)
-        canvas_obj.drawCentredString(width / 2, 80, "🖍️ Happy Coloring! 🖍️")
-        
-        canvas_obj.setFillColorRGB(0.5, 0.5, 0.5)
-        canvas_obj.setFont("Helvetica", 9)
-        canvas_obj.drawCentredString(width / 2, 50, "www.hera-coloring.com • Created with AI")
-        
-        # Start new page for actual content
+        # Start new page for actual coloring content
         canvas_obj.showPage()
         
     except Exception as e:
-        print(f"Error adding title page: {str(e)}")
+        print(f"❌ Error adding title page: {str(e)}")
+        import traceback
+        traceback.print_exc()
 
 
 def combine_bw_and_colored(bw_images, colored_images, output_path, book_details):
