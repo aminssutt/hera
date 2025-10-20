@@ -12,7 +12,14 @@ from payment import payment_bp  # Import payment blueprint
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app)  # Enable CORS for React frontend
+
+# Configure CORS pour permettre les requêtes depuis Vercel
+CORS(app, origins=[
+    'https://hera-seven.vercel.app',  # Production Vercel
+    'https://hera-*.vercel.app',      # Preview deployments Vercel
+    'http://localhost:3000',           # Dev local
+    'http://localhost:5173',           # Vite dev server
+], supports_credentials=True)
 
 # Register payment blueprint
 app.register_blueprint(payment_bp)
