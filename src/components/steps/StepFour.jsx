@@ -357,6 +357,44 @@ const StepFour = ({ selections }) => {
               </div>
             </motion.div>
 
+            {/* Coming Soon - Markers Notice */}
+            {selections.colors && selections.colors.length > 0 && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+                className="bg-gradient-to-r from-yellow-100 to-orange-100 rounded-3xl p-6 border-2 border-yellow-300"
+              >
+                <div className="flex items-start gap-4">
+                  <span className="text-4xl">🖍️</span>
+                  <div className="flex-1 text-left">
+                    <h4 className="text-xl font-fredoka font-bold text-gray-800 mb-2">
+                      ✨ Coming Soon: Matching Markers!
+                    </h4>
+                    <p className="text-base font-fredoka text-gray-700 leading-relaxed">
+                      Soon you'll be able to order a set of markers in <strong>your selected colors</strong> along with your coloring book! 
+                      Perfect for bringing your creations to life with the exact shades you chose. 🎨
+                    </p>
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {selections.colors.slice(0, 7).map((color, idx) => (
+                        <div
+                          key={idx}
+                          className="w-8 h-8 rounded-lg shadow-md border-2 border-white"
+                          style={{ backgroundColor: color }}
+                          title="Your selected color"
+                        />
+                      ))}
+                      {selections.colors.length > 7 && (
+                        <div className="w-8 h-8 rounded-lg bg-gray-300 border-2 border-white flex items-center justify-center text-xs font-bold">
+                          +{selections.colors.length - 7}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </motion.div>
+            )}
+
             {/* Final Summary & Payment */}
             <div className="bg-gradient-magical text-white rounded-3xl p-8 text-center">
               <h3 className="text-3xl font-bubblegum mb-4">
@@ -387,7 +425,7 @@ const StepFour = ({ selections }) => {
               </motion.button>
               
               <p className="text-sm mt-4 opacity-75">
-                🔒 Secure payment with Stripe • Payment coming soon!
+                🔒 Secure payment with Stripe
               </p>
             </div>
           </motion.div>

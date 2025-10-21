@@ -1,29 +1,53 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
-import { motion } from 'framer-motion'
+import { motion, AnimatePresence } from 'framer-motion'
 import AnimatedBackground from '../components/AnimatedBackground'
 
 const Success = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
   const sessionId = searchParams.get('session_id')
-  const [status, setStatus] = useState('processing')
+  const [generationStatus, setGenerationStatus] = useState('checking') // checking, generating, completed, error
+  const [pdfFilename, setPdfFilename] = useState(null)
+  const [statusMessage, setStatusMessage] = useState('Checking your order...')
+  const [showPdf, setShowPdf] = useState(false)
 
   useEffect(() => {
-    // Optional: Verify payment status with backend
-    if (sessionId) {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
-      fetch(`${backendUrl}/api/session-status/${sessionId}`)
+    if (!sessionId) {
+      setGenerationStatus('error')
+      setStatusMessage('No session found')
+      return
+    }
+
+    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+    
+    // Poll for generation status every 3 seconds
+    const pollInterval = setInterval(() => {
+      fetch(`${backendUrl}/api/generation-status/${sessionId}`)
         .then(res => res.json())
         .then(data => {
-          if (data.success && data.status === 'paid') {
-            setStatus('success')
+          if (data.success) {
+            if (data.status === 'completed') {
+              setGenerationStatus('completed')
+              setPdfFilename(data.pdf_filename)
+              setStatusMessage(data.message)
+              clearInterval(pollInterval)
+            } else if (data.status === 'generating') {
+              setGenerationStatus('generating')
+              setStatusMessage(data.message)
+            } else {
+              setGenerationStatus('queued')
+              setStatusMessage(data.message)
+            }
           }
         })
         .catch(err => {
-          console.error('Error checking payment status:', err)
+          console.error('Error checking generation status:', err)
         })
-    }
+    }, 3000)
+
+    // Cleanup on unmount
+    return () => clearInterval(pollInterval)
   }, [sessionId])
 
   return (
@@ -35,7 +59,7 @@ const Success = () => {
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.5 }}
-          className="bg-white rounded-3xl p-12 shadow-2xl text-center max-w-2xl w-full"
+          className="bg-white rounded-3xl p-12 shadow-2xl text-center max-w-4xl w-full"
         >
           {/* Success Icon */}
           <motion.div
@@ -67,40 +91,118 @@ const Success = () => {
             Thank you for your order! 🎨
           </motion.p>
 
-          {/* Status */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.5 }}
-            className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-6 mb-8"
-          >
-            <div className="text-6xl mb-4 animate-bounce">📚</div>
-            <p className="text-lg font-fredoka text-gray-700 mb-2">
-              Your custom coloring book is being generated...
-            </p>
-            <p className="text-md font-fredoka text-gray-600">
-              You'll receive an email with your book shortly!
-            </p>
-            
-            {/* Loading animation */}
-            <div className="flex justify-center gap-2 mt-6">
+          {/* Generation Status */}
+          <AnimatePresence mode="wait">
+            {generationStatus !== 'completed' && (
               <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
-                className="w-3 h-3 bg-hera-purple rounded-full"
-              />
+                key="loading"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+                className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl p-6 mb-8"
+              >
+                <div className="text-6xl mb-4 animate-bounce">
+                  {generationStatus === 'generating' ? '🎨' : '📚'}
+                </div>
+                <p className="text-lg font-fredoka text-gray-700 mb-2">
+                  {statusMessage}
+                </p>
+                
+                {/* Loading animation */}
+                <div className="flex justify-center gap-2 mt-6">
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay: 0 }}
+                    className="w-3 h-3 bg-hera-purple rounded-full"
+                  />
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
+                    className="w-3 h-3 bg-hera-blue rounded-full"
+                  />
+                  <motion.div
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
+                    className="w-3 h-3 bg-hera-pink rounded-full"
+                  />
+                </div>
+                
+                <p className="text-md font-fredoka text-gray-600 mt-4">
+                  You'll also receive an email with your book! 📧
+                </p>
+              </motion.div>
+            )}
+
+            {generationStatus === 'completed' && pdfFilename && (
               <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.6, repeat: Infinity, delay: 0.2 }}
-                className="w-3 h-3 bg-hera-blue rounded-full"
-              />
-              <motion.div
-                animate={{ scale: [1, 1.2, 1] }}
-                transition={{ duration: 0.6, repeat: Infinity, delay: 0.4 }}
-                className="w-3 h-3 bg-hera-pink rounded-full"
-              />
-            </div>
-          </motion.div>
+                key="completed"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-8"
+              >
+                {/* Success message */}
+                <div className="bg-green-100 rounded-2xl p-6 mb-6">
+                  <div className="text-6xl mb-3">✅</div>
+                  <p className="text-lg font-fredoka text-green-700 font-bold">
+                    Your book is ready!
+                  </p>
+                </div>
+
+                {/* PDF Viewer Toggle */}
+                {!showPdf && (
+                  <motion.button
+                    whileHover={{ scale: 1.05 }}
+                    whileTap={{ scale: 0.95 }}
+                    onClick={() => setShowPdf(true)}
+                    className="bg-gradient-magical text-white font-fredoka font-bold text-lg px-8 py-4 rounded-full shadow-lg mb-4"
+                  >
+                    📖 View Your Book
+                  </motion.button>
+                )}
+
+                {/* PDF Viewer */}
+                <AnimatePresence>
+                  {showPdf && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: 'auto' }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="mb-6"
+                    >
+                      <div className="bg-gray-100 rounded-2xl p-4 mb-4">
+                        <iframe
+                          src={`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/download-pdf/${pdfFilename}`}
+                          className="w-full h-[600px] rounded-xl shadow-inner"
+                          title="Your Coloring Book"
+                        />
+                      </div>
+                      
+                      <div className="flex gap-4 justify-center">
+                        <a
+                          href={`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/download-pdf/${pdfFilename}`}
+                          download
+                          className="bg-hera-purple text-white font-fredoka font-bold text-lg px-6 py-3 rounded-full shadow-lg hover:bg-purple-700 transition"
+                        >
+                          ⬇️ Download PDF
+                        </a>
+                        
+                        <button
+                          onClick={() => setShowPdf(false)}
+                          className="bg-gray-200 text-gray-700 font-fredoka font-bold text-lg px-6 py-3 rounded-full shadow-lg hover:bg-gray-300 transition"
+                        >
+                          Hide Preview
+                        </button>
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                <p className="text-md font-fredoka text-gray-600">
+                  Check your email for a copy! 📧
+                </p>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {/* Order Details */}
           {sessionId && (
@@ -141,16 +243,6 @@ const Success = () => {
               🎨 Create Another Book
             </motion.button>
           </motion.div>
-
-          {/* Footer Note */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="text-sm font-fredoka text-gray-500 mt-8"
-          >
-            Check your email inbox (and spam folder) for your coloring book! 📧
-          </motion.p>
         </motion.div>
       </div>
     </div>

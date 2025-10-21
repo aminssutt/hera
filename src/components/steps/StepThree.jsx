@@ -2,16 +2,58 @@ import { motion } from 'framer-motion'
 import { useState } from 'react'
 
 const difficulties = ['Easy', 'Medium', 'Hard']
-const colorOptions = [
-  '#FFAA7A', // Orange
-  '#7FD687', // Green
-  '#E891C8', // Pink
-  '#5EB3E4', // Blue
-  '#FFE347', // Yellow
-  '#A97DC0', // Purple
-  '#FF6B9D', // Rose
-  '#4ECDC4'  // Teal
-]
+
+// Organized color palettes
+const colorPalettes = {
+  warm: {
+    name: '🔥 Warm Colors',
+    colors: [
+      { hex: '#FF6B6B', name: 'Red' },
+      { hex: '#FF8E3C', name: 'Orange' },
+      { hex: '#FFA500', name: 'Deep Orange' },
+      { hex: '#FFD93D', name: 'Gold' },
+      { hex: '#FF6F91', name: 'Coral' },
+      { hex: '#FF9AA2', name: 'Salmon' },
+      { hex: '#FFB347', name: 'Peach' }
+    ]
+  },
+  cold: {
+    name: '❄️ Cold Colors',
+    colors: [
+      { hex: '#4A90E2', name: 'Blue' },
+      { hex: '#5EB3E4', name: 'Sky Blue' },
+      { hex: '#00D4FF', name: 'Cyan' },
+      { hex: '#4ECDC4', name: 'Teal' },
+      { hex: '#7B68EE', name: 'Purple' },
+      { hex: '#6A5ACD', name: 'Slate Blue' },
+      { hex: '#20B2AA', name: 'Turquoise' }
+    ]
+  },
+  pastel: {
+    name: '🌸 Pastel Colors',
+    colors: [
+      { hex: '#FFB6C1', name: 'Light Pink' },
+      { hex: '#E0BBE4', name: 'Lavender' },
+      { hex: '#B4E7CE', name: 'Mint' },
+      { hex: '#FFE4E1', name: 'Misty Rose' },
+      { hex: '#FFDFD3', name: 'Peach Cream' },
+      { hex: '#C7CEEA', name: 'Periwinkle' },
+      { hex: '#FFF5BA', name: 'Lemon Cream' }
+    ]
+  },
+  classic: {
+    name: '🖤 Natural & Neutral Colors',
+    colors: [
+      { hex: '#2C2C2C', name: 'Charcoal' },
+      { hex: '#5A5A5A', name: 'Dark Gray' },
+      { hex: '#8B8B8B', name: 'Gray' },
+      { hex: '#A0826D', name: 'Brown' },
+      { hex: '#8B4513', name: 'Saddle Brown' },
+      { hex: '#D2B48C', name: 'Tan' },
+      { hex: '#F5F5DC', name: 'Beige' }
+    ]
+  }
+}
 
 const StepThree = ({ selections, onUpdate }) => {
   const [selectedColors, setSelectedColors] = useState(selections.colors || [])
@@ -98,29 +140,68 @@ const StepThree = ({ selections, onUpdate }) => {
         className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-lg"
       >
         <h3 className="text-xl sm:text-2xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
-          🎨 Color Theme (Select multiple)
+          🎨 Color Palette (Select any colors)
         </h3>
-        <div className="grid grid-cols-4 sm:grid-cols-6 md:grid-cols-8 gap-3 sm:gap-4">
-          {colorOptions.map((color) => (
-            <motion.button
-              key={color}
-              whileHover={{ scale: 1.1 }}
-              whileTap={{ scale: 0.9 }}
-              onClick={() => toggleColor(color)}
-              className={`w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 rounded-xl sm:rounded-2xl transition-all shadow-md
-                ${selectedColors.includes(color) 
-                  ? 'ring-2 sm:ring-4 ring-gray-700 ring-offset-2 shadow-xl' 
-                  : 'hover:shadow-xl'
-                }
-              `}
-              style={{ backgroundColor: color }}
-            >
-              {selectedColors.includes(color) && (
-                <span className="text-white text-xl sm:text-2xl">✓</span>
-              )}
-            </motion.button>
+        <p className="text-sm sm:text-base font-fredoka text-gray-600 mb-4">
+          Choose colors from any palette below - they'll be used to color your book!
+        </p>
+        
+        {/* Color Palettes */}
+        <div className="space-y-6">
+          {Object.entries(colorPalettes).map(([key, palette]) => (
+            <div key={key}>
+              <h4 className="text-base sm:text-lg font-fredoka font-bold text-gray-600 mb-3">
+                {palette.name}
+              </h4>
+              <div className="grid grid-cols-7 gap-2 sm:gap-3">
+                {palette.colors.map((color) => (
+                  <motion.button
+                    key={color.hex}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => toggleColor(color.hex)}
+                    className={`relative aspect-square rounded-xl sm:rounded-2xl transition-all shadow-md
+                      ${selectedColors.includes(color.hex) 
+                        ? 'ring-2 sm:ring-4 ring-gray-800 ring-offset-2 shadow-xl' 
+                        : 'hover:shadow-lg'
+                      }
+                    `}
+                    style={{ backgroundColor: color.hex }}
+                    title={color.name}
+                  >
+                    {selectedColors.includes(color.hex) && (
+                      <span className="absolute inset-0 flex items-center justify-center text-white text-xl sm:text-2xl font-bold drop-shadow-lg">
+                        ✓
+                      </span>
+                    )}
+                  </motion.button>
+                ))}
+              </div>
+            </div>
           ))}
         </div>
+
+        {/* Selected Colors Summary */}
+        {selectedColors.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: 'auto' }}
+            className="mt-6 p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl"
+          >
+            <p className="text-sm font-fredoka font-bold text-gray-700 mb-2">
+              ✨ Selected Colors ({selectedColors.length}):
+            </p>
+            <div className="flex flex-wrap gap-2">
+              {selectedColors.map((color) => (
+                <div
+                  key={color}
+                  className="w-8 h-8 rounded-lg shadow-md border-2 border-white"
+                  style={{ backgroundColor: color }}
+                />
+              ))}
+            </div>
+          </motion.div>
+        )}
       </motion.div>
 
       {/* Preview Badge */}

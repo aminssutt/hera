@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Color Palettes Preview - Hera</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 40px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 40px;
+            font-size: 2.5em;
+        }
+        .palette {
+            margin-bottom: 40px;
+        }
+        .palette-name {
+            font-size: 1.5em;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #555;
+        }
+        .colors {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 15px;
+        }
+        .color-box {
+            aspect-ratio: 1;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            cursor: pointer;
+        }
+        .color-box:hover {
+            transform: scale(1.1);
+        }
+        .color-name {
+            font-size: 0.75em;
+            color: white;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            font-weight: bold;
+            text-align: center;
+            padding: 5px;
+        }
+        .color-hex {
+            font-size: 0.65em;
+            color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+            font-family: monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Hera Color Palettes</h1>
+        
+        <!-- Warm Colors -->
+        <div class="palette">
+            <div class="palette-name">🔥 Warm Colors</div>
+            <div class="colors">
+                <div class="color-box" style="background-color: #FF6B6B;">
+                    <div class="color-name">Red</div>
+                    <div class="color-hex">#FF6B6B</div>
+                </div>
+                <div class="color-box" style="background-color: #FF8E3C;">
+                    <div class="color-name">Orange</div>
+                    <div class="color-hex">#FF8E3C</div>
+                </div>
+                <div class="color-box" style="background-color: #FFA500;">
+                    <div class="color-name">Deep Orange</div>
+                    <div class="color-hex">#FFA500</div>
+                </div>
+                <div class="color-box" style="background-color: #FFD93D;">
+                    <div class="color-name">Gold</div>
+                    <div class="color-hex">#FFD93D</div>
+                </div>
+                <div class="color-box" style="background-color: #FF6F91;">
+                    <div class="color-name">Coral</div>
+                    <div class="color-hex">#FF6F91</div>
+                </div>
+                <div class="color-box" style="background-color: #FF9AA2;">
+                    <div class="color-name">Salmon</div>
+                    <div class="color-hex">#FF9AA2</div>
+                </div>
+                <div class="color-box" style="background-color: #FFB347;">
+                    <div class="color-name">Peach</div>
+                    <div class="color-hex">#FFB347</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cold Colors -->
+        <div class="palette">
+            <div class="palette-name">❄️ Cold Colors</div>
+            <div class="colors">
+                <div class="color-box" style="background-color: #4A90E2;">
+                    <div class="color-name">Blue</div>
+                    <div class="color-hex">#4A90E2</div>
+                </div>
+                <div class="color-box" style="background-color: #5EB3E4;">
+                    <div class="color-name">Sky Blue</div>
+                    <div class="color-hex">#5EB3E4</div>
+                </div>
+                <div class="color-box" style="background-color: #00D4FF;">
+                    <div class="color-name">Cyan</div>
+                    <div class="color-hex">#00D4FF</div>
+                </div>
+                <div class="color-box" style="background-color: #4ECDC4;">
+                    <div class="color-name">Teal</div>
+                    <div class="color-hex">#4ECDC4</div>
+                </div>
+                <div class="color-box" style="background-color: #7B68EE;">
+                    <div class="color-name">Purple</div>
+                    <div class="color-hex">#7B68EE</div>
+                </div>
+                <div class="color-box" style="background-color: #6A5ACD;">
+                    <div class="color-name">Slate Blue</div>
+                    <div class="color-hex">#6A5ACD</div>
+                </div>
+                <div class="color-box" style="background-color: #20B2AA;">
+                    <div class="color-name">Turquoise</div>
+                    <div class="color-hex">#20B2AA</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pastel Colors -->
+        <div class="palette">
+            <div class="palette-name">🌸 Pastel Colors</div>
+            <div class="colors">
+                <div class="color-box" style="background-color: #FFB6C1;">
+                    <div class="color-name">Light Pink</div>
+                    <div class="color-hex">#FFB6C1</div>
+                </div>
+                <div class="color-box" style="background-color: #E0BBE4;">
+                    <div class="color-name">Lavender</div>
+                    <div class="color-hex">#E0BBE4</div>
+                </div>
+                <div class="color-box" style="background-color: #B4E7CE;">
+                    <div class="color-name">Mint</div>
+                    <div class="color-hex">#B4E7CE</div>
+                </div>
+                <div class="color-box" style="background-color: #FFE4E1;">
+                    <div class="color-name">Misty Rose</div>
+                    <div class="color-hex">#FFE4E1</div>
+                </div>
+                <div class="color-box" style="background-color: #FFDFD3;">
+                    <div class="color-name">Peach Cream</div>
+                    <div class="color-hex">#FFDFD3</div>
+                </div>
+                <div class="color-box" style="background-color: #C7CEEA;">
+                    <div class="color-name">Periwinkle</div>
+                    <div class="color-hex">#C7CEEA</div>
+                </div>
+                <div class="color-box" style="background-color: #FFF5BA;">
+                    <div class="color-name">Lemon Cream</div>
+                    <div class="color-hex">#FFF5BA</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Natural & Neutral Colors -->
+        <div class="palette">
+            <div class="palette-name">🖤 Natural & Neutral Colors</div>
+            <div class="colors">
+                <div class="color-box" style="background-color: #2C2C2C;">
+                    <div class="color-name">Charcoal</div>
+                    <div class="color-hex">#2C2C2C</div>
+                </div>
+                <div class="color-box" style="background-color: #5A5A5A;">
+                    <div class="color-name">Dark Gray</div>
+                    <div class="color-hex">#5A5A5A</div>
+                </div>
+                <div class="color-box" style="background-color: #8B8B8B;">
+                    <div class="color-name">Gray</div>
+                    <div class="color-hex">#8B8B8B</div>
+                </div>
+                <div class="color-box" style="background-color: #A0826D;">
+                    <div class="color-name">Brown</div>
+                    <div class="color-hex">#A0826D</div>
+                </div>
+                <div class="color-box" style="background-color: #8B4513;">
+                    <div class="color-name">Saddle Brown</div>
+                    <div class="color-hex">#8B4513</div>
+                </div>
+                <div class="color-box" style="background-color: #D2B48C;">
+                    <div class="color-name">Tan</div>
+                    <div class="color-hex">#D2B48C</div>
+                </div>
+                <div class="color-box" style="background-color: #F5F5DC;">
+                    <div class="color-name" style="color: #333; text-shadow: none;">Beige</div>
+                    <div class="color-hex" style="color: #333; text-shadow: none;">#F5F5DC</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
