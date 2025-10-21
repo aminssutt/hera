@@ -14,7 +14,7 @@ const Customize = () => {
   const [selections, setSelections] = useState({
     theme: [],
     topic: '',
-    pages: 24,
+    pages: 12,
     difficulty: 'Easy',
     colors: []
   })
@@ -141,7 +141,7 @@ const Customize = () => {
             </div>
 
             {/* Step 3 */}
-            <div className={`p-4 rounded-2xl transition-all ${currentStep === 3 ? 'bg-gradient-magical' : 'bg-gray-200'}`}>
+            <div className={`mb-6 p-4 rounded-2xl transition-all ${currentStep === 3 ? 'bg-gradient-magical' : 'bg-gray-200'}`}>
               <h3 className={`text-xl font-fredoka font-bold mb-2 ${currentStep === 3 ? 'text-white' : 'text-gray-500'}`}>
                 Step 3
               </h3>

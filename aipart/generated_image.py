@@ -24,6 +24,11 @@ CORS(app, origins=[
 # Register payment blueprint
 app.register_blueprint(payment_bp)
 
+# Start the generation queue worker
+from generation_queue import start_queue_worker
+start_queue_worker()
+print("✅ Generation queue worker initialized")
+
 # Configure upload folder
 UPLOAD_FOLDER = 'generated_images'
 if not os.path.exists(UPLOAD_FOLDER):
@@ -157,6 +162,16 @@ def download(filename):
     """Download generated image"""
     filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
     return send_file(filepath, as_attachment=True)
+
+@app.route('/api/queue-status', methods=['GET'])
+def queue_status():
+    """Get current generation queue status"""
+    from generation_queue import get_queue_status
+    status = get_queue_status()
+    return jsonify({
+        'success': True,
+        'queue': status
+    })
 
 if __name__ == '__main__':
     print("🚀 Starting Hera AI Backend on http://localhost:5000")

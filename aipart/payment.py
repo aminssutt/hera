@@ -155,33 +155,18 @@ def stripe_webhook():
             else:
                 print("⚠️ Payment confirmation failed, but continuing...\n")
             
-            # STEP 2: Generate the book in BACKGROUND using threading
-            print("📚 Step 2: Queuing book generation in background...")
+            # STEP 2: Add to generation queue (prevents memory overload)
+            print("📚 Step 2: Adding to generation queue...")
             
-            import threading
-            from book_generator import generate_complete_book
+            from generation_queue import add_to_queue, get_queue_status
             
-            # Launch generation in a separate thread to avoid blocking webhook
-            def generate_in_background():
-                try:
-                    print(f"🔄 [Background] Starting book generation for {customer_email}...")
-                    pdf_path = generate_complete_book(session, preview_image_base64=None)
-                    
-                    if pdf_path:
-                        print(f"✅ [Background] Book generation complete! PDF saved at: {pdf_path}")
-                    else:
-                        print(f"❌ [Background] Book generation failed for {customer_email}")
-                except Exception as e:
-                    print(f"❌ [Background] Error in book generation: {str(e)}")
-                    import traceback
-                    traceback.print_exc()
+            # Add job to queue
+            job_id = add_to_queue(session)
+            queue_status = get_queue_status()
             
-            # Start background thread
-            thread = threading.Thread(target=generate_in_background)
-            thread.daemon = True
-            thread.start()
-            
-            print(f"✅ Background generation started! Webhook responding immediately.\n")
+            print(f"✅ Job {job_id} added to queue!")
+            print(f"   Queue position: {queue_status['queue_size']}")
+            print(f"   Currently processing: {queue_status['current_job'] or 'None'}\n")
             print(f"{'='*60}\n")
             
         # Return success immediately (don't wait for generation)

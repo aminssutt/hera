@@ -46,7 +46,8 @@ const StepThree = ({ selections, onUpdate }) => {
           <input
             type="range"
             min="10"
-            max="30"
+            max="20"
+            step="2"
             value={selections.pages}
             onChange={(e) => onUpdate('pages', parseInt(e.target.value))}
             className="flex-1 h-3 w-full"
@@ -54,9 +55,9 @@ const StepThree = ({ selections, onUpdate }) => {
           <div className="flex gap-2 text-xs sm:text-sm font-fredoka text-gray-500 self-end sm:self-auto">
             <span>10</span>
             <span>20</span>
-            <span>30</span>
           </div>
         </div>
+        
       </motion.div>
 
       {/* Difficulty Section */}

@@ -213,10 +213,12 @@ def generate_complete_book(session_data, preview_image_base64=None):
                     bw_images.append(img_path)
         
         else:
-            # Colored edition: Generate B&W first, then color THE SAME images
-            print(f"🖤 Step 1: Generating {total_pages} black & white pages...")
+            # Colored edition: Generate HALF as B&W, then color the same images
+            # Ex: total_pages=10 → 5 B&W + 5 colored (same images colored)
+            num_bw_pages = total_pages // 2
+            print(f"🖤 Step 1: Generating {num_bw_pages} black & white pages...")
             bw_source_images = []
-            for i in range(total_pages):
+            for i in range(num_bw_pages):
                 page_num = i + 1
                 img_path = generate_single_page(theme, topic, difficulty, is_colored=False, page_num=page_num)
                 if img_path:
