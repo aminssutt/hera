@@ -155,26 +155,37 @@ def stripe_webhook():
             else:
                 print("⚠️ Payment confirmation failed, but continuing...\n")
             
-            # STEP 2: Generate the complete book (in background)
-            print("📚 Step 2: Starting book generation...")
-            print("⏳ This may take 5-30 minutes depending on number of pages...\n")
+            # STEP 2: Generate the book in BACKGROUND using threading
+            print("📚 Step 2: Queuing book generation in background...")
             
+            import threading
             from book_generator import generate_complete_book
             
-            # TODO: In production, this should be done in a background worker (Celery, RQ, etc.)
-            # For now, it will block the webhook response, but Stripe has a 30-second timeout
-            # Consider using threading or async for better performance
+            # Launch generation in a separate thread to avoid blocking webhook
+            def generate_in_background():
+                try:
+                    print(f"🔄 [Background] Starting book generation for {customer_email}...")
+                    pdf_path = generate_complete_book(session, preview_image_base64=None)
+                    
+                    if pdf_path:
+                        print(f"✅ [Background] Book generation complete! PDF saved at: {pdf_path}")
+                    else:
+                        print(f"❌ [Background] Book generation failed for {customer_email}")
+                except Exception as e:
+                    print(f"❌ [Background] Error in book generation: {str(e)}")
+                    import traceback
+                    traceback.print_exc()
             
-            pdf_path = generate_complete_book(session, preview_image_base64=None)
+            # Start background thread
+            thread = threading.Thread(target=generate_in_background)
+            thread.daemon = True
+            thread.start()
             
-            if pdf_path:
-                print(f"🎉 Book generation complete! PDF saved at: {pdf_path}\n")
-            else:
-                print(f"❌ Book generation failed. Manual intervention required.\n")
-            
+            print(f"✅ Background generation started! Webhook responding immediately.\n")
             print(f"{'='*60}\n")
             
-        return jsonify({'success': True})
+        # Return success immediately (don't wait for generation)
+        return jsonify({'success': True}), 200
         
     except Exception as e:
         print(f"❌ Webhook error: {str(e)}")
