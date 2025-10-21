@@ -197,3 +197,75 @@ def get_session_status(session_id):
             'success': False,
             'error': str(e)
         }), 400
+
+
+@payment_bp.route('/api/generation-status/<session_id>', methods=['GET'])
+def get_generation_status(session_id):
+    """Get the generation status and PDF path for a session"""
+    try:
+        from session_manager import get_session_pdf
+        from generation_queue import get_queue_status
+        
+        # Check if session has a completed PDF
+        session_data = get_session_pdf(session_id)
+        
+        if session_data and session_data.get('status') == 'completed':
+            return jsonify({
+                'success': True,
+                'status': 'completed',
+                'pdf_filename': session_data['pdf_filename'],
+                'message': 'Your book is ready! 🎉'
+            })
+        
+        # Otherwise check queue status
+        queue_status = get_queue_status()
+        
+        if queue_status['is_processing']:
+            return jsonify({
+                'success': True,
+                'status': 'generating',
+                'message': 'Your book is being generated... 🎨'
+            })
+        else:
+            return jsonify({
+                'success': True,
+                'status': 'queued',
+                'queue_position': queue_status['queue_size'],
+                'message': f"Your book is in the queue (position: {queue_status['queue_size']})... 📚"
+            })
+        
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400
+
+
+@payment_bp.route('/api/download-pdf/<filename>', methods=['GET'])
+def download_pdf(filename):
+    """Download a generated PDF"""
+    try:
+        import os
+        from flask import send_file
+        
+        pdf_folder = os.path.join(os.path.dirname(__file__), 'generated_pdfs')
+        pdf_path = os.path.join(pdf_folder, filename)
+        
+        if os.path.exists(pdf_path):
+            return send_file(
+                pdf_path,
+                mimetype='application/pdf',
+                as_attachment=False,  # Display in browser
+                download_name=filename
+            )
+        else:
+            return jsonify({
+                'success': False,
+                'error': 'PDF not found'
+            }), 404
+            
+    except Exception as e:
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 400

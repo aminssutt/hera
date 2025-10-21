@@ -53,6 +53,21 @@ def process_queue():
                 
                 if pdf_path:
                     print(f"✅ Job {job['id']} completed successfully")
+                    
+                    # Register the session with the PDF
+                    try:
+                        from session_manager import register_session
+                        import os
+                        
+                        session = job['session']
+                        session_id = session.id
+                        pdf_filename = os.path.basename(pdf_path)
+                        customer_email = session.customer_details.email if session.customer_details else None
+                        
+                        register_session(session_id, pdf_filename, customer_email)
+                        print(f"✅ Session {session_id} registered with PDF {pdf_filename}")
+                    except Exception as e:
+                        print(f"⚠️ Failed to register session: {str(e)}")
                 else:
                     print(f"❌ Job {job['id']} failed")
                 

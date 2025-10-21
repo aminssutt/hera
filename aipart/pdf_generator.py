@@ -46,8 +46,8 @@ def create_coloring_book_pdf(images, output_path, book_details):
             img_width, img_height = pil_img.size
             aspect_ratio = img_width / img_height
             
-            # Add generous padding around images (1 inch on all sides)
-            padding = 72  # 1 inch padding
+            # Reduced padding for better page coverage (0.5 inch = 36 points)
+            padding = 36  # Was 72 (1 inch), now 36 (0.5 inch) for ~55% coverage
             max_width = page_width - (2 * padding)
             max_height = page_height - (2 * padding)
             

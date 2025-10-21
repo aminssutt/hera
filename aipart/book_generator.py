@@ -67,13 +67,15 @@ def build_prompt(theme, topic, difficulty, is_colored=False, colors=None):
         prompt = f"""Create a fully colored illustration for a children's coloring book reference page.
 Theme: {theme_text}. Art style: {style_desc}. Complexity: {difficulty_desc}.
 This is a colored reference example showing how the page could look when finished.{color_desc}
-The image should be vibrant, child-friendly, and inspiring. Make it beautiful and fun!"""
+The image should be vibrant, child-friendly, and inspiring. Make it beautiful and fun!
+IMPORTANT: NO TEXT, NO WORDS, NO LETTERS - only illustrations and drawings."""
     else:
         # Black and white coloring page prompt
         prompt = f"""Create a black and white coloring book page for children.
 Theme: {theme_text}. Art style: {style_desc}. Complexity: {difficulty_desc}.
 IMPORTANT: The image MUST be black and white line art ONLY - clean outlines, no shading, no grayscale.
-Perfect for coloring with crayons or markers. High contrast, clear lines, child-friendly design."""
+Perfect for coloring with crayons or markers. High contrast, clear lines, child-friendly design.
+CRITICAL: NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS - only pure line art illustrations."""
     
     return prompt
 
@@ -127,7 +129,7 @@ def generate_single_page(theme, topic, difficulty, is_colored=False, colors=None
             
             prompt = build_prompt(theme, topic, difficulty, is_colored=False, colors=None)
             
-            # Generate image with Google Imagen
+            # Generate image with Google Imagen - Portrait 3:4 for better A4 coverage
             response = client.models.generate_image(
                 model='imagen-4.0-generate-001',
                 prompt=prompt,
@@ -135,7 +137,7 @@ def generate_single_page(theme, topic, difficulty, is_colored=False, colors=None
                     number_of_images=1,
                     safety_filter_level='BLOCK_LOW_AND_ABOVE',
                     person_generation='ALLOW_ADULT',
-                    aspect_ratio='1:1',
+                    aspect_ratio='3:4',  # Portrait 768x1024 - perfect for A4 pages!
                     output_mime_type='image/png'
                 )
             )

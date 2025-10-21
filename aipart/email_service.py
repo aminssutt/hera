@@ -143,7 +143,7 @@ def send_payment_confirmation(to_email, order_details):
                         <span class="timeline-icon">📧</span>
                         <div>
                             <strong>Step 3: Email Delivery</strong><br>
-                            <small style="color: #6c757d;">Coming soon</small>
+                            <small style="color: #6c757d;">Arriving soon</small>
                         </div>
                     </div>
                 </div>

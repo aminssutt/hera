@@ -80,7 +80,8 @@ def build_prompt(params):
     prompt += f"Complexity: {difficulty_desc}. "
     prompt += f"The image should be a single page with clear outlines, "
     prompt += f"no shading, pure black lines on white background, perfect for coloring. "
-    prompt += f"Kid-friendly, safe, and fun content only."
+    prompt += f"Kid-friendly, safe, and fun content only. "
+    prompt += f"CRITICAL: NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS - only pure illustrations."
     
     return prompt
 
@@ -89,12 +90,14 @@ def generate_image_api(prompt):
     try:
         print(f"Generating image with prompt: {prompt}")
         
-        # Using Imagen 4.0 - note: generate_image (singular) not generate_images
+        # Using Imagen 4.0 - Portrait 3:4 ratio for better A4 page coverage
         response = client.models.generate_image(
             model='imagen-4.0-generate-001',
             prompt=prompt,
             config=types.GenerateImageConfig(
                 number_of_images=1,
+                aspect_ratio='3:4',  # Portrait 768x1024 - perfect for A4!
+                output_mime_type='image/png'
             )
         )
         
