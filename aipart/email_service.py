@@ -13,7 +13,7 @@ load_dotenv()
 
 # SendGrid Configuration
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
-FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'noreply@hera.work')  # Your verified sender email
+FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'hera.work.noreply@gmail.com')  # Your verified sender email
 
 
 def send_email_via_sendgrid(to_email, subject, html_content, attachment_path=None):
@@ -30,9 +30,9 @@ def send_email_via_sendgrid(to_email, subject, html_content, attachment_path=Non
         bool: True if sent successfully, False otherwise
     """
     try:
-        # Create message
+        # Create message with friendly sender name
         message = Mail(
-            from_email=FROM_EMAIL,
+            from_email=('hera.work.noreply@gmail.com', 'Hera - Kids Coloring Books'),
             to_emails=to_email,
             subject=subject,
             html_content=html_content
@@ -83,7 +83,8 @@ def send_payment_confirmation(to_email, order_details):
     theme = order_details.get('theme', 'Custom')
     amount = order_details.get('amount', '9.99')
     
-    subject = "🎉 Payment Confirmed - Your Coloring Book is Being Created!"
+    # Professional subject line without spam triggers
+    subject = "Your Hera Coloring Book Order Confirmation"
     
     html_content = f"""
     <!DOCTYPE html>
@@ -182,7 +183,8 @@ def send_pdf_email(to_email, pdf_path, book_details):
     book_type = book_details.get('bookType', 'blackwhite')
     theme = book_details.get('theme', 'Custom')
     
-    subject = f"🎨 Your Custom Coloring Book is Ready!"
+    # Professional subject line
+    subject = f"Your Hera Coloring Book is Ready - {pages} Pages"
     
     html_content = f"""
     <!DOCTYPE html>
