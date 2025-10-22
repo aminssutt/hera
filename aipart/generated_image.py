@@ -6,6 +6,7 @@ import base64
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
+import io
 from payment import payment_bp  # Import payment blueprint
 
 # Load environment variables
@@ -89,31 +90,29 @@ def build_prompt(params):
     return final_prompt
 
 def generate_image_api(prompt):
-    """Generate image using Google Imagen API"""
+    """Generate image using Gemini 2.5 Flash Image"""
+    print(f"Generating image with prompt: {prompt}")
+    
     try:
-        print(f"Generating image with prompt: {prompt}")
-        
-        # Using Imagen 4.0 - Portrait 3:4 ratio for better A4 page coverage
-        response = client.models.generate_image(
-            model='imagen-4.0-generate-001',
-            prompt=prompt,
-            config=types.GenerateImageConfig(
-                number_of_images=1,
-                aspect_ratio='3:4',  # Portrait 768x1024 - perfect for A4!
-                output_mime_type='image/png'
-            )
+        print("🎨 Generating with Gemini 2.5 Flash Image...")
+        response = client.models.generate_content(
+            model='gemini-2.5-flash-image',
+            contents=[prompt]
         )
         
-        # Get the generated image
-        if response.generated_images:
-            print("Image generated successfully!")
-            return response.generated_images[0].image.image_bytes
+        # Extract image from response parts
+        for part in response.candidates[0].content.parts:
+            if part.inline_data is not None:
+                print("✅ Image generated successfully with Gemini 2.5 Flash Image!")
+                # Return the raw image bytes
+                return part.inline_data.data
         
-        print("No image was generated")
+        print("❌ No image found in response")
         return None
-        
+    
     except Exception as e:
-        print(f"API Error: {str(e)}")
+        error_str = str(e)
+        print(f"❌ Gemini 2.5 Flash Image failed: {error_str[:200]}")
         import traceback
         traceback.print_exc()
         return None

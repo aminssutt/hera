@@ -124,40 +124,59 @@ def generate_single_page(theme, topic, difficulty, is_colored=False, colors=None
                 return None
         
         else:
-            # GÉNÉRER une nouvelle page B&W avec Imagen
-            print(f"  🎨 Generating B&W page {page_num} with Imagen 4.0...")
+            # GÉNÉRER une nouvelle page B&W avec Gemini 2.5 Flash Image
+            print(f"  🎨 Generating B&W page {page_num} with Gemini 2.5 Flash Image...")
             
             prompt = build_prompt(theme, topic, difficulty, is_colored=False, colors=None)
             
-            # Generate image with Google Imagen - Portrait 3:4 for better A4 coverage
-            response = client.models.generate_image(
-                model='imagen-4.0-generate-001',
-                prompt=prompt,
-                config=types.GenerateImageConfig(
-                    number_of_images=1,
-                    safety_filter_level='BLOCK_LOW_AND_ABOVE',
-                    person_generation='ALLOW_ADULT',
-                    aspect_ratio='3:4',  # Portrait 768x1024 - perfect for A4 pages!
-                    output_mime_type='image/png'
+            try:
+                # Generate image with Gemini 2.5 Flash Image
+                response = client.models.generate_content(
+                    model='gemini-2.5-flash-image',
+                    contents=[prompt]
                 )
-            )
-            
-            if response.generated_images:
-                image_data = response.generated_images[0].image.image_bytes
                 
-                # Save to file
-                timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-                filename = f"page_{page_num}_bw_{timestamp}.png"
-                filepath = os.path.join(GENERATED_FOLDER, filename)
+                # Extract image from response parts
+                generated_image = None
+                for part in response.candidates[0].content.parts:
+                    if part.inline_data is not None:
+                        generated_image = Image.open(io.BytesIO(part.inline_data.data))
+                        break
                 
-                with open(filepath, 'wb') as f:
-                    f.write(image_data)
-                
-                print(f"    ✅ B&W page {page_num} generated: {filename}")
-                return filepath
-            else:
-                print(f"    ❌ Failed to generate page {page_num}")
+                if generated_image:
+                    # Save the generated image
+                    timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                    filename = f"page_{page_num}_bw_{timestamp}.png"
+                    filepath = os.path.join(GENERATED_FOLDER, filename)
+                    generated_image.save(filepath)
+                    print(f"    ✅ Page {page_num} generated: {filename}")
+                    return filepath
+                else:
+                    print(f"    ❌ No image found in response for page {page_num}")
+                    return None
+                    
+            except Exception as e:
+                print(f"    ❌ Failed to generate page {page_num}: {str(e)[:200]}")
+                import traceback
+                traceback.print_exc()
                 return None
+            
+            # if response.generated_images:
+            #     image_data = response.generated_images[0].image.image_bytes
+                
+            #     # Save to file
+            #     timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+            #     filename = f"page_{page_num}_bw_{timestamp}.png"
+            #     filepath = os.path.join(GENERATED_FOLDER, filename)
+                
+            #     with open(filepath, 'wb') as f:
+            #         f.write(image_data)
+                
+            #     print(f"    ✅ B&W page {page_num} generated: {filename}")
+            #     return filepath
+            # else:
+            #     print(f"    ❌ Failed to generate page {page_num}")
+            #     return None
             
     except Exception as e:
         print(f"    ❌ Error generating page {page_num}: {str(e)}")
