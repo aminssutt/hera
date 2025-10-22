@@ -44,46 +44,49 @@ if not API_KEY:
 client = genai.Client(api_key=API_KEY)
 
 def build_prompt(params):
-    """Build a detailed prompt from user-selected parameters for kids coloring book pages"""
+    """Build a detailed, flattened, and negatively reinforced prompt for Imagen 4."""
     themes = params.get('theme', [])
-    topic = params.get('topic', 'Cartoon')
-    difficulty = params.get('difficulty', 'Easy')
-    
+    topic = params.get('topic', 'Cartoon') # Corresponds to Art Style
+    difficulty = params.get('difficulty', 'Easy') # Corresponds to Complexity
+ 
+    # 1. Map parameters to descriptive, model-friendly phrases
     # Build theme description
-    theme_text = " and ".join(themes) if isinstance(themes, list) and themes else "general"
-    
+    theme_text = " and ".join(themes) if isinstance(themes, list) and themes else "a general topic"
+ 
     # Difficulty mapping to detail level
     difficulty_map = {
         'Easy': 'simple, large shapes with minimal details, perfect for young children',
-        'Medium': 'moderate details with medium complexity, suitable for kids 6-10',
+        'Medium': 'moderate details with medium complexity',
         'Hard': 'intricate details and complex patterns, challenging for older kids'
     }
-    
     difficulty_desc = difficulty_map.get(difficulty, difficulty_map['Easy'])
-    
     # Style mapping
     style_map = {
-        'Ghibli': 'Studio Ghibli inspired, whimsical and magical',
+        'Ghibli': 'Studio Ghibli inspired, whimsical and magical style',
         'Cartoon': 'fun cartoon style with bold outlines',
-        'Minimal': 'minimalist and clean design',
-        'Comic': 'comic book style with dynamic energy',
-        'Detailed': 'highly detailed and rich illustration',
-        'Magical': 'mystical and enchanting with sparkles and magic elements'
+        'Minimal': 'minimalist and clean design, highly simplified',
+        'Comic': 'comic book illustration style with dynamic energy',
+        'Detailed': 'highly detailed and rich illustration style',
+        'Magical': 'mystical and enchanting style with stars and magic elements'
     }
-    
     style_desc = style_map.get(topic, 'cartoon style')
-    
-    # Build the complete prompt for a coloring book page
-    prompt = f"Create a black and white coloring book page for children. "
-    prompt += f"Theme: {theme_text}. "
-    prompt += f"Art style: {style_desc}. "
-    prompt += f"Complexity: {difficulty_desc}. "
-    prompt += f"The image should be a single page with clear outlines, "
-    prompt += f"no shading, pure black lines on white background, perfect for coloring. "
-    prompt += f"Kid-friendly, safe, and fun content only. "
-    prompt += f"CRITICAL: NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS - only pure illustrations."
-    
-    return prompt
+ 
+    # 2. Flatten and Assemble the Final Prompt
+    # Part A: The Critical Negative Instruction (placed first for emphasis)
+    prompt_negative_critical = "CRITICAL: A clean line art illustration with ABSOLUTELY NO TEXT, NO WORDS, NO LETTERS, NO NUMBERS, NO TYPOGRAPHY, NO CODE, NO METADATA, NO WATERMARKS. "
+    # Part B: The Descriptive, Flattened Prompt
+    prompt_description = (
+        f"Create a black and white coloring book page for children, illustrating **{theme_text}**. "
+        f"The art style is a **{style_desc}**. "
+        f"The composition is **{difficulty_desc}**. "
+        f"The entire image must be black and white line art ONLY, with clear, high-contrast, black outlines on a pure white background, and NO shading, NO grayscale. "
+        f"Perfect for coloring with crayons."
+    )
+    # Part C: Reiterate Negative Constraints (for final reinforcement)
+    prompt_negative_reinforcement = "IMPORTANT: Only generate the drawing. Do not include any form of text, keywords, theme names, or numbers anywhere in the image."
+    # Combine all parts
+    final_prompt = f"{prompt_negative_critical}{prompt_description} {prompt_negative_reinforcement}"
+    return final_prompt
 
 def generate_image_api(prompt):
     """Generate image using Google Imagen API"""
