@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
 import { useSearchParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import AnimatedBackground from '../components/AnimatedBackground'
 
 const Success = () => {
   const [searchParams] = useSearchParams()
   const navigate = useNavigate()
+  const { t } = useTranslation()
   const sessionId = searchParams.get('session_id')
   const [generationStatus, setGenerationStatus] = useState('checking') // checking, generating, completed, error
   const [pdfFilename, setPdfFilename] = useState(null)
-  const [statusMessage, setStatusMessage] = useState('Checking your order...')
+  const [statusMessage, setStatusMessage] = useState(t('success.loading'))
   const [showPdf, setShowPdf] = useState(false)
 
   useEffect(() => {
@@ -78,7 +80,7 @@ const Success = () => {
             transition={{ delay: 0.3 }}
             className="text-5xl font-bubblegum text-gray-800 mb-4"
           >
-            Payment Successful!
+            {t('success.title')}
           </motion.h1>
 
           {/* Message */}
@@ -88,7 +90,7 @@ const Success = () => {
             transition={{ delay: 0.4 }}
             className="text-xl font-fredoka text-gray-600 mb-6"
           >
-            Thank you for your order! 🎨
+            {t('success.thankYou')}
           </motion.p>
 
           {/* Generation Status */}
@@ -128,7 +130,7 @@ const Success = () => {
                 </div>
                 
                 <p className="text-md font-fredoka text-gray-600 mt-4">
-                  You'll also receive an email with your book! 📧
+                  {t('success.emailNotification')}
                 </p>
               </motion.div>
             )}
@@ -144,7 +146,7 @@ const Success = () => {
                 <div className="bg-green-100 rounded-2xl p-6 mb-6">
                   <div className="text-6xl mb-3">✅</div>
                   <p className="text-lg font-fredoka text-green-700 font-bold">
-                    Your book is ready!
+                    {t('success.bookReady')}
                   </p>
                 </div>
 
@@ -156,7 +158,7 @@ const Success = () => {
                     onClick={() => setShowPdf(true)}
                     className="bg-gradient-magical text-white font-fredoka font-bold text-lg px-8 py-4 rounded-full shadow-lg mb-4"
                   >
-                    📖 View Your Book
+                    {t('success.viewBook')}
                   </motion.button>
                 )}
 
@@ -183,14 +185,14 @@ const Success = () => {
                           download
                           className="bg-hera-purple text-white font-fredoka font-bold text-lg px-6 py-3 rounded-full shadow-lg hover:bg-purple-700 transition"
                         >
-                          ⬇️ Download PDF
+                          {t('success.downloadButton')}
                         </a>
                         
                         <button
                           onClick={() => setShowPdf(false)}
                           className="bg-gray-200 text-gray-700 font-fredoka font-bold text-lg px-6 py-3 rounded-full shadow-lg hover:bg-gray-300 transition"
                         >
-                          Hide Preview
+                          {t('success.hidePreview')}
                         </button>
                       </div>
                     </motion.div>
@@ -198,7 +200,7 @@ const Success = () => {
                 </AnimatePresence>
 
                 <p className="text-md font-fredoka text-gray-600">
-                  Check your email for a copy! 📧
+                  {t('success.checkEmail')}
                 </p>
               </motion.div>
             )}
@@ -213,7 +215,7 @@ const Success = () => {
               className="bg-gray-50 rounded-2xl p-4 mb-8"
             >
               <p className="text-sm font-fredoka text-gray-500">
-                Order ID: {sessionId.substring(0, 20)}...
+                {t('success.orderId')}: {sessionId.substring(0, 20)}...
               </p>
             </motion.div>
           )}
@@ -231,7 +233,7 @@ const Success = () => {
               onClick={() => navigate('/')}
               className="bg-gradient-magical text-white font-fredoka font-bold text-lg px-8 py-4 rounded-full shadow-lg"
             >
-              🏠 Back to Home
+              {t('success.backToHome')}
             </motion.button>
             
             <motion.button
@@ -240,7 +242,7 @@ const Success = () => {
               onClick={() => navigate('/customize')}
               className="bg-white border-4 border-hera-purple text-hera-purple font-fredoka font-bold text-lg px-8 py-4 rounded-full shadow-lg"
             >
-              🎨 Create Another Book
+              {t('success.createAnother')}
             </motion.button>
           </motion.div>
         </motion.div>

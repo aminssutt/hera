@@ -1,7 +1,9 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 const StepFour = ({ selections }) => {
+  const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
   const [generatedImage, setGeneratedImage] = useState(null)
   const [error, setError] = useState(null)
@@ -103,10 +105,10 @@ const StepFour = ({ selections }) => {
     <div className="space-y-4 sm:space-y-6">
       <div className="text-center">
         <h2 className="text-2xl sm:text-3xl md:text-4xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
-          🎨 Preview & Finalize Your Book
+          {t('customize.previewTitle')}
         </h2>
         <p className="font-fredoka text-gray-600 text-base sm:text-lg">
-          Generate a preview and choose your book format!
+          {t('customize.previewSubtitle')}
         </p>
       </div>
 
@@ -120,25 +122,25 @@ const StepFour = ({ selections }) => {
             className="bg-gradient-magical text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6"
           >
             <h3 className="text-xl sm:text-2xl font-bubblegum mb-3 sm:mb-4 text-center">
-              📋 Your Book Details
+              {t('customize.bookDetails')}
             </h3>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 font-fredoka">
               <div className="bg-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4">
-                <span className="text-xs sm:text-sm opacity-80">Themes:</span>
+                <span className="text-xs sm:text-sm opacity-80">{t('customize.themes')}:</span>
                 <p className="text-base sm:text-lg font-bold">
-                  {selections.theme.length > 0 ? selections.theme.join(', ') : 'Not selected'}
+                  {selections.theme.length > 0 ? selections.theme.join(', ') : t('customize.notSelected')}
                 </p>
               </div>
               <div className="bg-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4">
-                <span className="text-xs sm:text-sm opacity-80">Style:</span>
-                <p className="text-base sm:text-lg font-bold">{selections.topic || 'Not selected'}</p>
+                <span className="text-xs sm:text-sm opacity-80">{t('customize.style')}:</span>
+                <p className="text-base sm:text-lg font-bold">{selections.topic || t('customize.notSelected')}</p>
               </div>
               <div className="bg-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4">
-                <span className="text-xs sm:text-sm opacity-80">Pages:</span>
-                <p className="text-base sm:text-lg font-bold">{selections.pages} pages</p>
+                <span className="text-xs sm:text-sm opacity-80">{t('customize.pages')}:</span>
+                <p className="text-base sm:text-lg font-bold">{selections.pages} {t('customize.pages')}</p>
               </div>
               <div className="bg-white/20 rounded-xl sm:rounded-2xl p-3 sm:p-4">
-                <span className="text-xs sm:text-sm opacity-80">Difficulty:</span>
+                <span className="text-xs sm:text-sm opacity-80">{t('customize.difficulty')}:</span>
                 <p className="text-base sm:text-lg font-bold">{selections.difficulty}</p>
               </div>
             </div>
@@ -156,7 +158,7 @@ const StepFour = ({ selections }) => {
           onClick={generatePreview}
           className="w-full btn-gradient text-white font-fredoka font-bold text-2xl py-6 rounded-3xl shadow-2xl"
         >
-          ✨ Generate Preview
+          {t('customize.generatePreview')}
         </motion.button>
       )}
 
@@ -177,10 +179,10 @@ const StepFour = ({ selections }) => {
               🎨
             </motion.div>
             <h3 className="text-3xl font-bubblegum text-gray-700 mb-4">
-              Creating Your Masterpiece...
+              {t('customize.creating')}
             </h3>
             <p className="font-fredoka text-gray-600 text-lg mb-6">
-              Our AI is generating a unique coloring page just for you!
+              {t('customize.aiGenerating')}
             </p>
             <div className="flex justify-center gap-2">
               <motion.div
@@ -212,14 +214,14 @@ const StepFour = ({ selections }) => {
         >
           <div className="text-4xl sm:text-5xl mb-3 sm:mb-4">❌</div>
           <h3 className="text-xl sm:text-2xl font-fredoka font-bold text-red-700 mb-2">
-            Oops! Something went wrong
+            {t('customize.errorTitle')}
           </h3>
           <p className="font-fredoka text-red-600 mb-3 sm:mb-4 text-sm sm:text-base">{error}</p>
           <button
             onClick={generatePreview}
             className="bg-red-500 hover:bg-red-600 text-white font-fredoka font-bold px-6 sm:px-8 py-2 sm:py-3 rounded-xl sm:rounded-2xl transition-all text-sm sm:text-base"
           >
-            Try Again
+            {t('customize.tryAgain')}
           </button>
         </motion.div>
       )}
@@ -236,7 +238,7 @@ const StepFour = ({ selections }) => {
             {/* Preview Image - Compact */}
             <div className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-xl">
               <h3 className="text-xl sm:text-2xl font-bubblegum text-gray-700 text-center mb-3 sm:mb-4">
-                🌟 Preview Sample Page
+                {t('customize.previewSample')}
               </h3>
               
               <div className="bg-gradient-to-br from-purple-100 to-pink-100 rounded-xl sm:rounded-2xl p-2 sm:p-3 max-w-md mx-auto">
@@ -248,14 +250,14 @@ const StepFour = ({ selections }) => {
               </div>
 
               <p className="text-center font-fredoka text-gray-600 mt-3 sm:mt-4 text-xs sm:text-sm">
-                This is a preview of your coloring book style!
+                {t('customize.previewDesc')}
               </p>
             </div>
 
             {/* Format Selection */}
             <div className="bg-white rounded-3xl p-6 shadow-xl">
               <h3 className="text-2xl font-bubblegum text-gray-700 mb-4">
-                📦 Choose Your Format
+                {t('customize.chooseFormat')}
               </h3>
               <div className="grid md:grid-cols-2 gap-4 mb-6">
                 <motion.button
@@ -269,7 +271,7 @@ const StepFour = ({ selections }) => {
                   }`}
                 >
                   <div className="text-4xl mb-2">📱</div>
-                  <div>Digital PDF</div>
+                  <div>{t('customize.digitalPdf')}</div>
                   <div className="text-3xl mt-2">$9.99</div>
                 </motion.button>
 
@@ -279,18 +281,18 @@ const StepFour = ({ selections }) => {
                     className="w-full p-6 rounded-2xl font-fredoka font-bold text-xl transition-all bg-gray-200 text-gray-400 cursor-not-allowed opacity-60"
                   >
                     <div className="text-4xl mb-2">📚</div>
-                    <div>Physical Book</div>
+                    <div>{t('customize.physicalBook')}</div>
                     <div className="text-3xl mt-2">$24.99</div>
                   </motion.button>
                   <div className="absolute -top-2 -right-2 bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full shadow-lg">
-                    🚧 Coming Soon
+                    {t('customize.comingSoon')}
                   </div>
                 </div>
               </div>
 
               {/* Book Type Selection */}
               <h3 className="text-2xl font-bubblegum text-gray-700 mb-4">
-                🎨 Choose Your Book Type
+                {t('customize.chooseBookType')}
               </h3>
               <div className="grid md:grid-cols-2 gap-4">
                 <motion.button
@@ -304,9 +306,9 @@ const StepFour = ({ selections }) => {
                   }`}
                 >
                   <div className="text-4xl mb-2">⚫⚪</div>
-                  <div className="font-bold text-lg mb-2">Black & White Only</div>
+                  <div className="font-bold text-lg mb-2">{t('customize.blackWhiteOnly')}</div>
                   <div className="text-sm opacity-80">
-                    {selections.pages} coloring pages to color yourself
+                    {selections.pages} {t('customize.coloringPages')}
                   </div>
                 </motion.button>
 
@@ -321,9 +323,9 @@ const StepFour = ({ selections }) => {
                   }`}
                 >
                   <div className="text-4xl mb-2">🌈</div>
-                  <div className="font-bold text-lg mb-2">Colored Version</div>
+                  <div className="font-bold text-lg mb-2">{t('customize.coloredVersion')}</div>
                   <div className="text-sm opacity-80">
-                    {Math.floor(selections.pages / 2)} B&W + {Math.floor(selections.pages / 2)} colored ({selections.pages} total)
+                    {Math.floor(selections.pages / 2)} {t('customize.bw')} + {Math.floor(selections.pages / 2)} {t('customize.colored')} ({selections.pages} {t('customize.total')})
                   </div>
                 </motion.button>
               </div>
@@ -339,18 +341,15 @@ const StepFour = ({ selections }) => {
                 <div className="text-4xl">ℹ️</div>
                 <div className="flex-1 font-fredoka">
                   <h4 className="text-xl font-bold text-blue-800 mb-2">
-                    {bookType === 'blackwhite' ? 'Black & White Edition' : 'Colored Edition'}
+                    {bookType === 'blackwhite' ? t('customize.blackWhiteEdition') : t('customize.coloredEdition')}
                   </h4>
                   {bookType === 'blackwhite' ? (
                     <p className="text-blue-700">
-                      Your book will contain <strong>{selections.pages} unique coloring pages</strong> in black and white,
-                      ready for your child to color with their favorite crayons or markers!
+                      {t('customize.blackWhiteDesc', { pages: selections.pages })}
                     </p>
                   ) : (
                     <p className="text-blue-700">
-                      Your book will contain <strong>{selections.pages} total pages</strong>:
-                      <br />• <strong>{getBlackWhitePages()} black & white pages</strong> to color
-                      <br />• <strong>{getColoredPages()} colored example pages</strong> - the SAME pages but colored as inspiration!
+                      {t('customize.coloredDesc', { totalPages: selections.pages, bwPages: getBlackWhitePages(), coloredPages: getColoredPages() })}
                     </p>
                   )}
                 </div>
@@ -369,11 +368,10 @@ const StepFour = ({ selections }) => {
                   <span className="text-4xl">🖍️</span>
                   <div className="flex-1 text-left">
                     <h4 className="text-xl font-fredoka font-bold text-gray-800 mb-2">
-                      ✨ Coming Soon: Matching Markers!
+                      {t('customize.matchingMarkers')}
                     </h4>
                     <p className="text-base font-fredoka text-gray-700 leading-relaxed">
-                      Soon you'll be able to order a set of markers in <strong>your selected colors</strong> along with your coloring book! 
-                      Perfect for bringing your creations to life with the exact shades you chose. 🎨
+                      {t('customize.markersDesc')}
                     </p>
                     <div className="mt-3 flex flex-wrap gap-2">
                       {selections.colors.slice(0, 7).map((color, idx) => (
@@ -398,18 +396,18 @@ const StepFour = ({ selections }) => {
             {/* Final Summary & Payment */}
             <div className="bg-gradient-magical text-white rounded-3xl p-8 text-center">
               <h3 className="text-3xl font-bubblegum mb-4">
-                🎉 Ready to Create Your Book!
+                {t('customize.readyToCreate')}
               </h3>
               <div className="text-xl font-fredoka mb-2">
-                <strong>{format === 'pdf' ? 'Digital PDF' : 'Physical Book'}</strong> • 
-                <strong> {bookType === 'blackwhite' ? ' Black & White' : ' Colored Edition'}</strong>
+                <strong>{format === 'pdf' ? t('customize.digitalPdf') : t('customize.physicalBook')}</strong> • 
+                <strong> {bookType === 'blackwhite' ? t('customize.blackWhiteOnly') : t('customize.coloredVersion')}</strong>
               </div>
               <div className="text-lg font-fredoka mb-6 opacity-90">
                 {bookType === 'colored' ? (
-                  <>{getBlackWhitePages()} B&W + {getColoredPages()} Colored = {getTotalPages()} pages</>
+                  <>{getBlackWhitePages()} {t('customize.bw')} + {getColoredPages()} {t('customize.colored')} = {getTotalPages()} {t('customize.pages')}</>
                 ) : (
-                  <>{getTotalPages()} pages</>
-                )} • {selections.difficulty} difficulty
+                  <>{getTotalPages()} {t('customize.pages')}</>
+                )} • {selections.difficulty} {t('customize.difficulty')}
               </div>
               <div className="text-5xl font-bold mb-6">
                 ${getPrice()}
@@ -421,11 +419,11 @@ const StepFour = ({ selections }) => {
                 onClick={handlePayment}
                 className="bg-white text-hera-purple font-fredoka font-bold text-2xl px-12 py-5 rounded-full shadow-2xl hover:shadow-3xl transition-all"
               >
-                💳 Proceed to Payment
+                {t('customize.proceedToPayment')}
               </motion.button>
               
               <p className="text-sm mt-4 opacity-75">
-                🔒 Secure payment with Stripe
+                {t('customize.securePayment')}
               </p>
             </div>
           </motion.div>

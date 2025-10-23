@@ -1,19 +1,22 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 const topics = [
-  { name: 'Ghibli', description: 'Studio Ghibli inspired', emoji: '🎨' },
-  { name: 'Cartoon', description: 'Fun cartoon style', emoji: '😄' },
-  { name: 'Minimal', description: 'Simple & clean', emoji: '⭕' },
-  { name: 'Comic', description: 'Comic book style', emoji: '💥' },
-  { name: 'Detailed', description: 'Rich in details', emoji: '🔍' },
-  { name: 'Magical', description: 'Mystical & enchanting', emoji: '✨' }
+  { name: 'Ghibli', key: 'ghibli', description: 'Studio Ghibli inspired', emoji: '🎨' },
+  { name: 'Cartoon', key: 'cartoon', description: 'Fun cartoon style', emoji: '😄' },
+  { name: 'Minimal', key: 'minimal', description: 'Simple & clean', emoji: '⭕' },
+  { name: 'Comic', key: 'comic', description: 'Comic book style', emoji: '💥' },
+  { name: 'Detailed', key: 'detailed', description: 'Rich in details', emoji: '🔍' },
+  { name: 'Magical', key: 'magical', description: 'Mystical & enchanting', emoji: '✨' }
 ]
 
 const StepTwo = ({ selection, onSelect }) => {
+  const { t } = useTranslation()
+  
   return (
     <div>
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-fredoka font-bold text-gray-700 mb-6 sm:mb-8 text-center">
-        Choose Your Art Style
+        {t('customize.chooseArtStyle')}
       </h2>
       
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
@@ -34,10 +37,10 @@ const StepTwo = ({ selection, onSelect }) => {
               {topic.emoji}
             </div>
             <h3 className="text-xl sm:text-2xl font-fredoka font-bold text-gray-700 mb-2">
-              {topic.name}
+              {t(`styles.${topic.key}`)}
             </h3>
             <p className="text-sm sm:text-base text-gray-500 font-fredoka">
-              {topic.description}
+              {t(`styles.${topic.key}Desc`)}
             </p>
           </motion.div>
         ))}

@@ -272,3 +272,103 @@ def download_pdf(filename):
         }), 400
 
 
+@payment_bp.route('/api/contact-feedback', methods=['POST'])
+def contact_feedback():
+    """Handle contact form feedback submissions"""
+    try:
+        from email_service import send_email_via_sendgrid
+        
+        data = request.json
+        first_name = data.get('firstName', '')
+        last_name = data.get('lastName', '')
+        email = data.get('email', '')
+        rating = data.get('rating', '')
+        ease_of_use = data.get('easeOfUse', '')
+        quality = data.get('quality', '')
+        would_recommend = data.get('wouldRecommend', '')
+        additional_comments = data.get('additionalComments', '')
+        
+        # Build feedback email body
+        email_body = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #9333ea;">🎨 New Feedback from Hera User</h2>
+            
+            <div style="background: #f9fafb; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3 style="color: #6b7280;">👤 Contact Information</h3>
+                <p><strong>Name:</strong> {first_name} {last_name}</p>
+                <p><strong>Email:</strong> {email}</p>
+            </div>
+            
+            <div style="background: #fef3c7; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3 style="color: #92400e;">⭐ Overall Rating: {rating}/5</h3>
+            </div>
+            
+            <div style="background: #f9fafb; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3 style="color: #6b7280;">📊 Survey Responses</h3>
+                <p><strong>Ease of Use:</strong> {ease_of_use}</p>
+                <p><strong>Quality Rating:</strong> {quality}</p>
+                <p><strong>Would Recommend:</strong> {would_recommend}</p>
+            </div>
+            
+            {f'''
+            <div style="background: #ede9fe; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <h3 style="color: #6b21a8;">💬 Additional Comments</h3>
+                <p style="white-space: pre-wrap;">{additional_comments}</p>
+            </div>
+            ''' if additional_comments else ''}
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; color: #6b7280; font-size: 12px;">
+                <p>Received on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+            </div>
+        </div>
+        """
+        
+        # Send feedback email to Hera
+        send_email_via_sendgrid(
+            to_email='hera.work.noreply@gmail.com',
+            subject=f'📢 New Feedback from {first_name} {last_name} - Rating: {rating}/5',
+            html_content=email_body
+        )
+        
+        # Send confirmation email to user
+        confirmation_body = f"""
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+            <h2 style="color: #9333ea;">Thank You for Your Feedback! 💜</h2>
+            
+            <p>Hi {first_name},</p>
+            
+            <p>Thank you so much for taking the time to share your feedback with us! Your input is incredibly valuable and helps us make Hera better for everyone.</p>
+            
+            <div style="background: #f3e8ff; padding: 20px; border-radius: 10px; margin: 20px 0;">
+                <p style="margin: 0;">We've received your feedback and our team will review it carefully. If you've reported an issue or have a question, we'll get back to you as soon as possible.</p>
+            </div>
+            
+            <p>Keep creating amazing coloring books! 🎨</p>
+            
+            <p>Best regards,<br><strong>The Hera Team</strong></p>
+            
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; color: #6b7280; font-size: 12px;">
+                <p>Questions? Contact us at: hera.work.noreply@gmail.com</p>
+            </div>
+        </div>
+        """
+        
+        send_email_via_sendgrid(
+            to_email=email,
+            subject='Thank you for your feedback! - Hera',
+            html_content=confirmation_body
+        )
+        
+        return jsonify({
+            'success': True,
+            'message': 'Feedback sent successfully'
+        }), 200
+        
+    except Exception as e:
+        print(f"Error sending feedback: {str(e)}")
+        return jsonify({
+            'success': False,
+            'error': str(e)
+        }), 500
+
+

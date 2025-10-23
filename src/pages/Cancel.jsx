@@ -1,9 +1,11 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 import AnimatedBackground from '../components/AnimatedBackground'
 
 const Cancel = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-red-100 via-orange-100 to-yellow-100 relative overflow-hidden">
@@ -33,7 +35,7 @@ const Cancel = () => {
             transition={{ delay: 0.3 }}
             className="text-5xl font-bubblegum text-gray-800 mb-4"
           >
-            Payment Cancelled
+            {t('cancel.title')}
           </motion.h1>
 
           {/* Message */}
@@ -43,7 +45,7 @@ const Cancel = () => {
             transition={{ delay: 0.4 }}
             className="text-xl font-fredoka text-gray-600 mb-6"
           >
-            No worries! Your selections are still saved.
+            {t('cancel.message')}
           </motion.p>
 
           {/* Info Box */}
@@ -55,7 +57,7 @@ const Cancel = () => {
           >
             <div className="text-6xl mb-4">💭</div>
             <p className="text-lg font-fredoka text-gray-700 mb-2">
-              Changed your mind?
+              {t('cancel.tryAgain')}
             </p>
             <p className="text-md font-fredoka text-gray-600">
               You can go back and complete your order anytime!
@@ -87,7 +89,7 @@ const Cancel = () => {
               onClick={() => navigate('/customize')}
               className="bg-gradient-magical text-white font-fredoka font-bold text-lg px-8 py-4 rounded-full shadow-lg"
             >
-              ← Go Back & Try Again
+              ← {t('cancel.tryAgain')}
             </motion.button>
             
             <motion.button
@@ -96,7 +98,7 @@ const Cancel = () => {
               onClick={() => navigate('/')}
               className="bg-white border-4 border-gray-300 text-gray-700 font-fredoka font-bold text-lg px-8 py-4 rounded-full shadow-lg"
             >
-              🏠 Back to Home
+              {t('cancel.backToHome')}
             </motion.button>
           </motion.div>
 

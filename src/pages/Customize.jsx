@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useNavigate } from 'react-router-dom'
+import { useTranslation } from 'react-i18next'
 import StepOne from '../components/steps/StepOne'
 import StepTwo from '../components/steps/StepTwo'
 import StepThree from '../components/steps/StepThree'
@@ -8,6 +9,7 @@ import StepFour from '../components/steps/StepFour'
 import Modal from '../components/Modal'
 
 const Customize = () => {
+  const { t } = useTranslation()
   const navigate = useNavigate()
   const [currentStep, setCurrentStep] = useState(1)
   const [showModal, setShowModal] = useState(false)
@@ -79,8 +81,8 @@ const Customize = () => {
           isOpen={showModal}
           onClose={() => setShowModal(false)}
           onConfirm={handleConfirmExit}
-          title="Warning!"
-          message="You will lose all your book creation progress. Are you sure you want to leave?"
+          title={t('customize.modalTitle')}
+          message={t('customize.modalMessage')}
         />
 
         {/* Header */}
@@ -96,7 +98,7 @@ const Customize = () => {
             className="bg-white/70 backdrop-blur-sm hover:bg-white/90 text-gray-700 font-fredoka font-bold px-4 sm:px-6 py-2 sm:py-3 rounded-full shadow-lg transition-all flex items-center gap-1 sm:gap-2 text-sm sm:text-base"
           >
             <span className="text-xl sm:text-2xl">🏠</span>
-            <span className="hidden sm:inline">Home</span>
+            <span className="hidden sm:inline">{t('customize.home')}</span>
           </motion.button>
           
           <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bubblegum text-gray-700">Hēra</h1>
@@ -114,7 +116,7 @@ const Customize = () => {
             {/* Step 1 */}
             <div className={`mb-6 p-4 rounded-2xl transition-all ${currentStep === 1 ? 'bg-gradient-magical' : 'bg-gray-200'}`}>
               <h3 className={`text-xl font-fredoka font-bold mb-2 ${currentStep === 1 ? 'text-white' : 'text-gray-500'}`}>
-                Step 1
+                {t('customize.step')} 1
               </h3>
               {selections.theme.length > 0 && (
                 <div className="space-y-2">
@@ -131,7 +133,7 @@ const Customize = () => {
             {/* Step 2 */}
             <div className={`mb-6 p-4 rounded-2xl transition-all ${currentStep === 2 ? 'bg-gradient-magical' : 'bg-gray-200'}`}>
               <h3 className={`text-xl font-fredoka font-bold mb-2 ${currentStep === 2 ? 'text-white' : 'text-gray-500'}`}>
-                Step 2
+                {t('customize.step')} 2
               </h3>
               {selections.topic && (
                 <div className="bg-white rounded-xl p-3">
@@ -143,13 +145,13 @@ const Customize = () => {
             {/* Step 3 */}
             <div className={`mb-6 p-4 rounded-2xl transition-all ${currentStep === 3 ? 'bg-gradient-magical' : 'bg-gray-200'}`}>
               <h3 className={`text-xl font-fredoka font-bold mb-2 ${currentStep === 3 ? 'text-white' : 'text-gray-500'}`}>
-                Step 3
+                {t('customize.step')} 3
               </h3>
               {currentStep >= 3 && (
                 <div className="bg-white rounded-xl p-3 space-y-2">
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">📄</span>
-                    <span className="font-fredoka text-sm">{selections.pages} pages</span>
+                    <span className="font-fredoka text-sm">{selections.pages} {t('customize.pages')}</span>
                   </div>
                   <div className="flex items-center gap-2">
                     <span className="text-2xl">🎯</span>
@@ -169,11 +171,11 @@ const Customize = () => {
             {/* Step 4 */}
             <div className={`p-4 rounded-2xl transition-all ${currentStep === 4 ? 'bg-gradient-magical' : 'bg-gray-200'}`}>
               <h3 className={`text-xl font-fredoka font-bold mb-2 ${currentStep === 4 ? 'text-white' : 'text-gray-500'}`}>
-                Step 4
+                {t('customize.step')} 4
               </h3>
               {currentStep === 4 && (
                 <div className="bg-white rounded-xl p-3">
-                  <span className="font-fredoka text-sm">✨ Preview & Payment</span>
+                  <span className="font-fredoka text-sm">{t('customize.previewPayment')}</span>
                 </div>
               )}
             </div>
@@ -242,7 +244,7 @@ const Customize = () => {
                     : 'bg-gray-500 text-white hover:bg-gray-600'
                 } transition-all`}
               >
-                ← Back
+                ← {t('customize.back')}
               </button>
 
               {currentStep < 4 && (
@@ -250,7 +252,7 @@ const Customize = () => {
                   onClick={handleNext}
                   className="px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-full font-fredoka font-bold text-base sm:text-lg md:text-xl btn-gradient text-white transition-all"
                 >
-                  Next →
+                  {t('customize.next')} →
                 </button>
               )}
             </div>

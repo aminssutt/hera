@@ -1,6 +1,8 @@
 import { motion, AnimatePresence } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 const Modal = ({ isOpen, onClose, onConfirm, title, message }) => {
+  const { t } = useTranslation()
   if (!isOpen) return null
 
   return (
@@ -36,7 +38,7 @@ const Modal = ({ isOpen, onClose, onConfirm, title, message }) => {
               onClick={onClose}
               className="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-700 font-fredoka font-bold text-xl py-4 rounded-2xl transition-all"
             >
-              No, Stay
+              {t('modal.noStay')}
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.05 }}
@@ -44,7 +46,7 @@ const Modal = ({ isOpen, onClose, onConfirm, title, message }) => {
               onClick={onConfirm}
               className="flex-1 bg-gradient-magical text-white font-fredoka font-bold text-xl py-4 rounded-2xl transition-all shadow-lg"
             >
-              Yes, Leave
+              {t('modal.yesLeave')}
             </motion.button>
           </div>
         </motion.div>

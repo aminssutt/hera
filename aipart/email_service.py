@@ -156,7 +156,7 @@ def send_payment_confirmation(to_email, order_details):
             </div>
             
             <div class="footer">
-                <p>Questions? Reply to this email or contact us at support@hera.work</p>
+                <p>Questions? Reply to this email or contact us at hera.work.noreply@gmail.com</p>
                 <p>© 2025 Hera - Custom AI Coloring Books</p>
             </div>
         </div>
@@ -241,7 +241,7 @@ def send_pdf_email(to_email, pdf_path, book_details):
             
             <div class="footer">
                 <p>Thank you for choosing Hera! ❤️</p>
-                <p>Questions? Reply to this email or contact us at support@hera.work</p>
+                <p>Questions? Reply to this email or contact us at hera.work.noreply@gmail.com</p>
                 <p>© 2025 Hera - Custom AI Coloring Books</p>
             </div>
         </div>
@@ -311,7 +311,7 @@ def send_physical_book_confirmation(to_email, order_details):
             </div>
             
             <div class="footer">
-                <p>Questions? Reply to this email or contact us at support@hera.work</p>
+                <p>Questions? Reply to this email or contact us at hera.work.noreply@gmail.com</p>
                 <p>© 2025 Hera - Custom AI Coloring Books</p>
             </div>
         </div>

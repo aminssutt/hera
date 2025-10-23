@@ -38,6 +38,12 @@ wheels/
 # AI Generated Images & PDFs
 aipart/generated_images/
 aipart/generated_pdfs/
+aipart/test_generated_images/
+aipart/session_pdf_mapping.json
+
+# Test files
+aipart/test_*.py
+test_*.py
 
 # Environment variables
 .env

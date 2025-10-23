@@ -1,12 +1,18 @@
 import { motion } from 'framer-motion'
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
 
-const difficulties = ['Easy', 'Medium', 'Hard']
+const difficulties = [
+  { value: 'Easy', key: 'easy' },
+  { value: 'Medium', key: 'medium' },
+  { value: 'Hard', key: 'hard' }
+]
 
 // Organized color palettes
 const colorPalettes = {
   warm: {
     name: '🔥 Warm Colors',
+    key: 'warmColors',
     colors: [
       { hex: '#FF6B6B', name: 'Red' },
       { hex: '#FF8E3C', name: 'Orange' },
@@ -19,6 +25,7 @@ const colorPalettes = {
   },
   cold: {
     name: '❄️ Cold Colors',
+    key: 'coldColors',
     colors: [
       { hex: '#4A90E2', name: 'Blue' },
       { hex: '#5EB3E4', name: 'Sky Blue' },
@@ -31,6 +38,7 @@ const colorPalettes = {
   },
   pastel: {
     name: '🌸 Pastel Colors',
+    key: 'pastelColors',
     colors: [
       { hex: '#FFB6C1', name: 'Light Pink' },
       { hex: '#E0BBE4', name: 'Lavender' },
@@ -43,6 +51,7 @@ const colorPalettes = {
   },
   classic: {
     name: '🖤 Natural & Neutral Colors',
+    key: 'naturalColors',
     colors: [
       { hex: '#2C2C2C', name: 'Charcoal' },
       { hex: '#5A5A5A', name: 'Dark Gray' },
@@ -56,6 +65,7 @@ const colorPalettes = {
 }
 
 const StepThree = ({ selections, onUpdate }) => {
+  const { t } = useTranslation()
   const [selectedColors, setSelectedColors] = useState(selections.colors || [])
 
   const toggleColor = (color) => {
@@ -79,7 +89,7 @@ const StepThree = ({ selections, onUpdate }) => {
         className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-lg"
       >
         <h3 className="text-xl sm:text-2xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
-          📄 Number of Pages
+          {t('customize.numberOfPages')}
         </h3>
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4">
           <span className="text-3xl sm:text-4xl font-fredoka font-bold text-hera-purple min-w-[60px]">
@@ -110,23 +120,23 @@ const StepThree = ({ selections, onUpdate }) => {
         className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-lg"
       >
         <h3 className="text-xl sm:text-2xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
-          🎯 Difficulty Level
+          {t('customize.difficultyLevel')}
         </h3>
         <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
           {difficulties.map((diff) => (
             <motion.button
-              key={diff}
+              key={diff.value}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.95 }}
-              onClick={() => onUpdate('difficulty', diff)}
+              onClick={() => onUpdate('difficulty', diff.value)}
               className={`flex-1 py-3 sm:py-4 px-4 sm:px-6 rounded-xl sm:rounded-2xl font-fredoka font-bold text-lg sm:text-xl transition-all
-                ${selections.difficulty === diff
+                ${selections.difficulty === diff.value
                   ? 'bg-gradient-magical text-white shadow-xl'
                   : 'bg-gray-200 text-gray-600 hover:bg-gray-300'
                 }
               `}
             >
-              {diff}
+              {t(`difficulty.${diff.key}`)}
             </motion.button>
           ))}
         </div>
@@ -140,10 +150,10 @@ const StepThree = ({ selections, onUpdate }) => {
         className="bg-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 shadow-lg"
       >
         <h3 className="text-xl sm:text-2xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
-          🎨 Color Palette (Select any colors)
+          {t('customize.colorPalette')}
         </h3>
         <p className="text-sm sm:text-base font-fredoka text-gray-600 mb-4">
-          Choose colors from any palette below - they'll be used to color your book!
+          {t('customize.colorPaletteDesc')}
         </p>
         
         {/* Color Palettes */}
@@ -151,7 +161,7 @@ const StepThree = ({ selections, onUpdate }) => {
           {Object.entries(colorPalettes).map(([key, palette]) => (
             <div key={key}>
               <h4 className="text-base sm:text-lg font-fredoka font-bold text-gray-600 mb-3">
-                {palette.name}
+                {t(`colorPalettes.${palette.key}`)}
               </h4>
               <div className="grid grid-cols-7 gap-2 sm:gap-3">
                 {palette.colors.map((color) => (
@@ -189,7 +199,7 @@ const StepThree = ({ selections, onUpdate }) => {
             className="mt-6 p-4 bg-gradient-to-r from-purple-100 to-pink-100 rounded-xl"
           >
             <p className="text-sm font-fredoka font-bold text-gray-700 mb-2">
-              ✨ Selected Colors ({selectedColors.length}):
+              {t('customize.selectedColors')} ({selectedColors.length}):
             </p>
             <div className="flex flex-wrap gap-2">
               {selectedColors.map((color) => (
@@ -212,10 +222,10 @@ const StepThree = ({ selections, onUpdate }) => {
         className="bg-gradient-magical text-white rounded-2xl sm:rounded-3xl p-4 sm:p-6 text-center"
       >
         <h3 className="text-2xl sm:text-3xl font-bubblegum mb-2">
-          🎉 Your Book is Ready!
+          {t('customize.bookReady')}
         </h3>
         <p className="font-fredoka text-base sm:text-lg">
-          {selections.pages} pages • {selections.difficulty} level • {selectedColors.length} colors
+          {selections.pages} {t('customize.pages')} • {selections.difficulty} {t('customize.level')} • {selectedColors.length} {t('customize.colors')}
         </p>
       </motion.div>
     </div>

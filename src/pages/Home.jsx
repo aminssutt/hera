@@ -1,8 +1,10 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 const Home = () => {
   const navigate = useNavigate()
+  const { t } = useTranslation()
 
   const scrollToSection = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -25,7 +27,7 @@ const Home = () => {
             animate={{ scale: 1 }}
             transition={{ duration: 0.5, type: "spring", bounce: 0.5 }}
           >
-            Hēra
+            {t('home.title')}
           </motion.h1>
 
           {/* Description */}
@@ -36,12 +38,10 @@ const Home = () => {
             className="bg-white/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-4 sm:p-6 md:p-8 mb-6 sm:mb-8 shadow-xl"
           >
             <p className="text-xl sm:text-2xl md:text-3xl font-fredoka font-medium text-gray-700 mb-3 sm:mb-4 leading-relaxed">
-              ✨ Create magical coloring books for your kids! ✨
+              {t('home.subtitle')}
             </p>
             <p className="text-base sm:text-lg md:text-xl font-fredoka text-gray-600 leading-relaxed">
-              Choose a theme, a style, and create a unique personalized 
-              coloring book with artificial intelligence. 
-              Download instantly as PDF or receive a physical book! 📚🎨
+              {t('home.description')}
             </p>
           </motion.div>
 
@@ -52,7 +52,7 @@ const Home = () => {
             onClick={() => navigate('/customize')}
             className="btn-gradient text-white font-fredoka font-bold text-xl sm:text-2xl md:text-3xl px-8 sm:px-10 md:px-12 py-4 sm:py-5 md:py-6 rounded-full shadow-2xl w-full sm:w-auto"
           >
-            🚀 Create Your Book
+            {t('home.createButton')}
           </motion.button>
 
           {/* Scroll Down Indicator */}
@@ -64,7 +64,7 @@ const Home = () => {
             onClick={() => scrollToSection('how-it-works')}
           >
             <p className="text-gray-600 font-fredoka text-base sm:text-lg mb-2">
-              Learn more - Scroll down
+              {t('home.learnMore')}
             </p>
             <motion.div
               animate={{ y: [0, 10, 0] }}
@@ -109,7 +109,7 @@ const Home = () => {
             viewport={{ once: true }}
             className="text-4xl sm:text-5xl md:text-6xl font-bubblegum text-gray-700 text-center mb-8 sm:mb-12 md:mb-16"
           >
-            How It Works 🎯
+            {t('home.howItWorks')}
           </motion.h2>
 
           <div className="grid sm:grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
@@ -123,7 +123,7 @@ const Home = () => {
             >
               <div className="text-5xl sm:text-6xl md:text-7xl mb-3 sm:mb-4">1️⃣</div>
               <h3 className="text-2xl sm:text-3xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
-                Choose Your Theme
+                {t('home.chooseTheme')}
               </h3>
               <div className="bg-gradient-to-br from-purple-200 to-pink-200 rounded-2xl p-4 sm:p-6 mb-3 sm:mb-4 h-40 sm:h-48 flex items-center justify-center">
                 <div className="grid grid-cols-3 gap-2">
@@ -136,7 +136,7 @@ const Home = () => {
                 </div>
               </div>
               <p className="text-sm sm:text-base text-gray-600 font-fredoka">
-                Select from Animals, Nature, Fantasy, Science, Transport, and more!
+                {t('home.chooseThemeDesc')}
               </p>
             </motion.div>
 
@@ -150,7 +150,7 @@ const Home = () => {
             >
               <div className="text-5xl sm:text-6xl md:text-7xl mb-3 sm:mb-4">2️⃣</div>
               <h3 className="text-2xl sm:text-3xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
-                Pick Your Style
+                {t('home.customizeStyle')}
               </h3>
               <div className="bg-gradient-to-br from-blue-200 to-cyan-200 rounded-2xl p-4 sm:p-6 mb-3 sm:mb-4 h-40 sm:h-48 flex items-center justify-center">
                 <div className="space-y-1 sm:space-y-2 text-left">
@@ -162,7 +162,7 @@ const Home = () => {
                 </div>
               </div>
               <p className="text-sm sm:text-base text-gray-600 font-fredoka">
-                Choose the art style that fits your child's taste!
+                {t('home.customizeStyleDesc')}
               </p>
             </motion.div>
 
@@ -176,7 +176,7 @@ const Home = () => {
             >
               <div className="text-5xl sm:text-6xl md:text-7xl mb-3 sm:mb-4">3️⃣</div>
               <h3 className="text-2xl sm:text-3xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4">
-                Customize & Get!
+                {t('home.aiGeneration')}
               </h3>
               <div className="bg-gradient-to-br from-green-200 to-yellow-200 rounded-2xl p-4 sm:p-6 mb-3 sm:mb-4 h-40 sm:h-48 flex flex-col items-center justify-center">
                 <div className="text-4xl sm:text-5xl mb-2">📚</div>
@@ -190,7 +190,7 @@ const Home = () => {
                 </div>
               </div>
               <p className="text-sm sm:text-base text-gray-600 font-fredoka">
-                Set pages, difficulty, colors, and get your book!
+                {t('home.aiGenerationDesc')}
               </p>
             </motion.div>
           </div>
@@ -204,7 +204,7 @@ const Home = () => {
             className="mt-16 bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl"
           >
             <h3 className="text-4xl font-bubblegum text-gray-700 text-center mb-8">
-              ✨ See the Magic in Action ✨
+              ✨ {t('home.instantDownload')} ✨
             </h3>
             
             {/* Image Showcase */}
@@ -308,7 +308,7 @@ const Home = () => {
             viewport={{ once: true }}
             className="text-5xl md:text-6xl font-bubblegum text-gray-700 text-center mb-16"
           >
-            Choose Your Format 💰
+            {t('home.pricing')}
           </motion.h2>
 
           <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
@@ -322,17 +322,17 @@ const Home = () => {
             >
               <div className="text-7xl mb-4">📱</div>
               <h3 className="text-4xl font-bubblegum text-gray-700 mb-4">
-                Digital PDF
+                {t('home.digitalBook')}
               </h3>
               <div className="mb-6">
                 <span className="text-5xl font-fredoka font-bold text-hera-blue">$9.99</span>
               </div>
               <ul className="text-left space-y-3 mb-8">
-                <li className="font-fredoka text-gray-700">✅ Instant Download</li>
-                <li className="font-fredoka text-gray-700">✅ Print at Home</li>
-                <li className="font-fredoka text-gray-700">✅ High Quality PDF</li>
-                <li className="font-fredoka text-gray-700">✅ Unlimited Prints</li>
-                <li className="font-fredoka text-gray-700">✅ Email Delivery</li>
+                <li className="font-fredoka text-gray-700">{t('home.instantPDF')}</li>
+                <li className="font-fredoka text-gray-700">{t('home.printAtHome')}</li>
+                <li className="font-fredoka text-gray-700">{t('home.highQuality')}</li>
+                <li className="font-fredoka text-gray-700">{t('home.ecoFriendly')}</li>
+                <li className="font-fredoka text-gray-700">{t('home.saveMoney')}</li>
               </ul>
               <motion.button
                 whileHover={{ scale: 1.05 }}
@@ -340,43 +340,40 @@ const Home = () => {
                 onClick={() => navigate('/customize')}
                 className="w-full bg-hera-blue hover:bg-blue-500 text-white font-fredoka font-bold text-xl py-4 rounded-2xl shadow-lg transition-all"
               >
-                Get Digital
+                {t('home.getDigital')}
               </motion.button>
             </motion.div>
 
-            {/* Physical Book */}
+            {/* Physical Book - Coming Soon */}
             <motion.div
               initial={{ opacity: 0, x: 50 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              whileHover={{ scale: 1.05 }}
-              className="bg-gradient-magical text-white rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden"
+              className="bg-gradient-to-br from-gray-300 to-gray-400 text-white rounded-3xl p-8 shadow-2xl text-center relative overflow-hidden opacity-75"
             >
               <div className="absolute top-4 right-4 bg-yellow-400 text-gray-800 px-4 py-1 rounded-full font-fredoka font-bold text-sm">
-                POPULAR
+                {t('home.comingSoon').toUpperCase()}
               </div>
               <div className="text-7xl mb-4">📚</div>
               <h3 className="text-4xl font-bubblegum mb-4">
-                Physical Book
+                {t('home.physicalBook')}
               </h3>
               <div className="mb-6">
                 <span className="text-5xl font-fredoka font-bold">$24.99</span>
               </div>
-              <ul className="text-left space-y-3 mb-8">
-                <li className="font-fredoka">✅ Premium Paper Quality</li>
-                <li className="font-fredoka">✅ Professional Binding</li>
-                <li className="font-fredoka">✅ Shipped to Your Door</li>
-                <li className="font-fredoka">✅ Durable & Long-lasting</li>
-                <li className="font-fredoka">✅ Perfect Gift! 🎁</li>
+              <ul className="text-left space-y-3 mb-8 opacity-60">
+                <li className="font-fredoka">{t('home.premiumPaper')}</li>
+                <li className="font-fredoka">{t('home.professionalBinding')}</li>
+                <li className="font-fredoka">{t('home.shippedToDoor')}</li>
+                <li className="font-fredoka">{t('home.durable')}</li>
+                <li className="font-fredoka">{t('home.perfectGift')}</li>
               </ul>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-                onClick={() => navigate('/customize')}
-                className="w-full bg-white text-hera-purple font-fredoka font-bold text-xl py-4 rounded-2xl shadow-lg hover:shadow-2xl transition-all"
+              <button
+                disabled
+                className="w-full bg-gray-500 text-white font-fredoka font-bold text-xl py-4 rounded-2xl shadow-lg cursor-not-allowed"
               >
-                Get Physical Book
-              </motion.button>
+                {t('home.comingSoon')}
+              </button>
             </motion.div>
           </div>
 
@@ -386,7 +383,7 @@ const Home = () => {
             viewport={{ once: true }}
             className="text-center text-gray-600 font-fredoka mt-8 text-lg"
           >
-            💳 Secure payment with Stripe • 🔒 100% Safe & Encrypted
+            {t('home.securePayment')}
           </motion.p>
         </div>
       </section>
@@ -400,10 +397,10 @@ const Home = () => {
           className="text-center max-w-3xl"
         >
           <h2 className="text-5xl md:text-6xl font-bubblegum text-gray-700 mb-6">
-            Ready to Create Magic? ✨
+            {t('home.readyToCreate')}
           </h2>
           <p className="text-xl md:text-2xl font-fredoka text-gray-600 mb-8">
-            Join thousands of happy parents creating personalized coloring books!
+            {t('home.joinThousands')}
           </p>
           <motion.button
             whileHover={{ scale: 1.1 }}
@@ -411,10 +408,27 @@ const Home = () => {
             onClick={() => navigate('/customize')}
             className="btn-gradient text-white font-fredoka font-bold text-3xl px-16 py-6 rounded-full shadow-2xl"
           >
-            🚀 Start Creating Now!
+            {t('home.startCreating')}
           </motion.button>
         </motion.div>
       </section>
+
+      {/* Footer with Contact Button */}
+      <footer className="bg-white/80 backdrop-blur-sm py-8 border-t-2 border-gray-200">
+        <div className="container mx-auto px-4 flex flex-col md:flex-row items-center justify-between gap-4">
+          <p className="text-gray-600 font-fredoka text-center md:text-left">
+            {t('home.footer')}
+          </p>
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => navigate('/contact')}
+            className="bg-gradient-to-r from-purple-500 to-pink-500 text-white font-fredoka font-bold px-6 py-3 rounded-full shadow-lg hover:shadow-xl transition-all"
+          >
+            {t('home.shareFeedback')}
+          </motion.button>
+        </div>
+      </footer>
     </div>
   )
 }

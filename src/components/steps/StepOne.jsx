@@ -1,15 +1,18 @@
 import { motion } from 'framer-motion'
+import { useTranslation } from 'react-i18next'
 
 const themes = [
-  { name: 'Animals', emoji: '🦁', color: 'from-yellow-300 to-orange-400' },
-  { name: 'Nature', emoji: '🌳', color: 'from-green-300 to-green-500' },
-  { name: 'Fantasy', emoji: '🐉', color: 'from-purple-300 to-pink-400' },
-  { name: 'Science', emoji: '🧪', color: 'from-blue-300 to-cyan-400' },
-  { name: 'Transport', emoji: '🚒', color: 'from-red-300 to-orange-400' },
-  { name: 'Life', emoji: '🌱', color: 'from-teal-300 to-green-400' }
+  { name: 'Animals', key: 'animals', emoji: '🦁', color: 'from-yellow-300 to-orange-400' },
+  { name: 'Nature', key: 'nature', emoji: '🌳', color: 'from-green-300 to-green-500' },
+  { name: 'Fantasy', key: 'fantasy', emoji: '🐉', color: 'from-purple-300 to-pink-400' },
+  { name: 'Science', key: 'science', emoji: '🧪', color: 'from-blue-300 to-cyan-400' },
+  { name: 'Transport', key: 'transport', emoji: '🚒', color: 'from-red-300 to-orange-400' },
+  { name: 'Life', key: 'life', emoji: '🌱', color: 'from-teal-300 to-green-400' }
 ]
 
 const StepOne = ({ selection, onSelect }) => {
+  const { t } = useTranslation()
+  
   const handleThemeClick = (themeName) => {
     // If already selected, deselect it
     if (selection.includes(themeName)) {
@@ -28,10 +31,10 @@ const StepOne = ({ selection, onSelect }) => {
   return (
     <div>
       <h2 className="text-2xl sm:text-3xl md:text-4xl font-fredoka font-bold text-gray-700 mb-3 sm:mb-4 text-center">
-        Choose Your Theme(s)
+        {t('customize.chooseTheme')}
       </h2>
       <p className="text-center font-fredoka text-gray-500 mb-6 sm:mb-8 text-sm sm:text-base">
-        Select 1 or 2 themes for your coloring book
+        {t('customize.selectThemes')}
       </p>
       
       <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 md:gap-6">
@@ -52,7 +55,7 @@ const StepOne = ({ selection, onSelect }) => {
               {theme.emoji}
             </div>
             <h3 className="text-base sm:text-lg md:text-xl font-fredoka font-bold text-gray-700">
-              {theme.name}
+              {t(`themes.${theme.key}`)}
             </h3>
           </motion.div>
         ))}
