@@ -32,7 +32,7 @@ const Contact = () => {
     setSubmitStatus(null);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000'}/api/contact-feedback`, {
+      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/contact-feedback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
