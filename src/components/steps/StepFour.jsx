@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 
@@ -9,6 +9,22 @@ const StepFour = ({ selections }) => {
   const [error, setError] = useState(null)
   const [format, setFormat] = useState('pdf') // 'pdf' or 'physical'
   const [bookType, setBookType] = useState('blackwhite') // 'blackwhite' or 'colored'
+  const [promoInfo, setPromoInfo] = useState(null)
+
+  // Fetch current price and promo status
+  useEffect(() => {
+    const fetchPromoInfo = async () => {
+      try {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+        const response = await fetch(`${backendUrl}/api/current-price`)
+        const data = await response.json()
+        setPromoInfo(data)
+      } catch (err) {
+        console.error('Failed to fetch promo info:', err)
+      }
+    }
+    fetchPromoInfo()
+  }, [])
 
   const generatePreview = async () => {
     setLoading(true)
@@ -97,8 +113,17 @@ const StepFour = ({ selections }) => {
   }
 
   const getPrice = () => {
+    // For PDF: use promo price if available, otherwise regular
+    if (format === 'pdf' && promoInfo && promoInfo.is_promo) {
+      return promoInfo.price.toFixed(2)
+    }
+    // Default prices
     const basePrice = format === 'pdf' ? 9.99 : 24.99
     return basePrice.toFixed(2)
+  }
+
+  const getOriginalPrice = () => {
+    return format === 'pdf' ? '9.99' : '24.99'
   }
 
   return (
@@ -409,8 +434,27 @@ const StepFour = ({ selections }) => {
                   <>{getTotalPages()} {t('customize.pages')}</>
                 )} • {selections.difficulty} {t('customize.difficulty')}
               </div>
+              
+              {/* Promo Badge */}
+              {format === 'pdf' && promoInfo && promoInfo.is_promo && (
+                <motion.div
+                  initial={{ opacity: 0, y: -10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="bg-yellow-400 text-purple-900 font-bold py-2 px-6 rounded-full inline-block mb-4 shadow-lg"
+                >
+                  🎉 LAUNCH PROMO: {promoInfo.remaining_spots} / {promoInfo.promo_limit} spots left!
+                </motion.div>
+              )}
+              
               <div className="text-5xl font-bold mb-6">
-                ${getPrice()}
+                {format === 'pdf' && promoInfo && promoInfo.is_promo ? (
+                  <>
+                    <span className="line-through opacity-50 text-3xl mr-3">${getOriginalPrice()}</span>
+                    <span className="text-yellow-300">${getPrice()}</span>
+                  </>
+                ) : (
+                  <>${getPrice()}</>
+                )}
               </div>
               
               <motion.button

@@ -1,10 +1,27 @@
 import { useNavigate } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { useState, useEffect } from 'react'
 
 const Home = () => {
   const navigate = useNavigate()
   const { t } = useTranslation()
+  const [promoInfo, setPromoInfo] = useState(null)
+
+  // Fetch promo info on component mount
+  useEffect(() => {
+    const fetchPromoInfo = async () => {
+      try {
+        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
+        const response = await fetch(`${backendUrl}/api/current-price`)
+        const data = await response.json()
+        setPromoInfo(data)
+      } catch (err) {
+        console.error('Failed to fetch promo info:', err)
+      }
+    }
+    fetchPromoInfo()
+  }, [])
 
   const scrollToSection = (id) => {
     document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' })
@@ -318,14 +335,37 @@ const Home = () => {
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
               whileHover={{ scale: 1.05 }}
-              className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl text-center border-4 border-transparent hover:border-hera-blue transition-all"
+              className="bg-white/80 backdrop-blur-sm rounded-3xl p-8 shadow-xl text-center border-4 border-transparent hover:border-hera-blue transition-all relative"
             >
+              {/* Promo Badge - Top Right Corner */}
+              {promoInfo && promoInfo.is_promo && (
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.5, rotate: -15 }}
+                  animate={{ opacity: 1, scale: 1, rotate: 0 }}
+                  transition={{ type: "spring", bounce: 0.5 }}
+                  className="absolute -top-4 -right-4 bg-gradient-to-r from-yellow-400 to-orange-500 text-white font-bold py-2 px-4 rounded-full shadow-lg transform rotate-12 z-10"
+                >
+                  🔥 {promoInfo.remaining_spots}/{promoInfo.promo_limit} LEFT!
+                </motion.div>
+              )}
+              
               <div className="text-7xl mb-4">📱</div>
               <h3 className="text-4xl font-bubblegum text-gray-700 mb-4">
                 {t('home.digitalBook')}
               </h3>
               <div className="mb-6">
-                <span className="text-5xl font-fredoka font-bold text-hera-blue">$9.99</span>
+                {promoInfo && promoInfo.is_promo ? (
+                  <div className="flex flex-col items-center gap-2">
+                    <span className="text-3xl font-fredoka font-bold text-gray-400 line-through">$9.99</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-6xl font-fredoka font-bold text-orange-500">${promoInfo.price.toFixed(2)}</span>
+                      <span className="bg-red-500 text-white text-sm font-bold px-2 py-1 rounded">-80%</span>
+                    </div>
+                    <span className="text-sm font-fredoka text-orange-600 font-bold">LAUNCH SPECIAL!</span>
+                  </div>
+                ) : (
+                  <span className="text-5xl font-fredoka font-bold text-hera-blue">$9.99</span>
+                )}
               </div>
               <ul className="text-left space-y-3 mb-8">
                 <li className="font-fredoka text-gray-700">{t('home.instantPDF')}</li>

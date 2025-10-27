@@ -40,6 +40,7 @@ aipart/generated_images/
 aipart/generated_pdfs/
 aipart/test_generated_images/
 aipart/session_pdf_mapping.json
+aipart/order_counter.json
 
 # Test files
 aipart/test_*.py

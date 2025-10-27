@@ -11,8 +11,60 @@ load_dotenv()
 # Configure Stripe
 stripe.api_key = os.getenv('STRIPE_SECRET_KEY')
 
+# Promotion settings
+PROMO_LIMIT = int(os.getenv('PROMO_FIRST_CUSTOMERS', 100))
+PROMO_PRICE = float(os.getenv('PROMO_PRICE', 1.99))
+REGULAR_PRICE = float(os.getenv('REGULAR_PRICE', 9.99))
+COUNTER_FILE = 'order_counter.json'
+
+def get_order_count():
+    """Get current order count"""
+    try:
+        if os.path.exists(COUNTER_FILE):
+            with open(COUNTER_FILE, 'r') as f:
+                data = json.load(f)
+                return data.get('total_orders', 0)
+        return 0
+    except:
+        return 0
+
+def increment_order_count():
+    """Increment order count and return new count"""
+    try:
+        count = get_order_count()
+        count += 1
+        with open(COUNTER_FILE, 'w') as f:
+            json.dump({
+                'total_orders': count,
+                'promo_orders': min(count, PROMO_LIMIT),
+                'last_updated': datetime.now().isoformat()
+            }, f, indent=2)
+        return count
+    except Exception as e:
+        print(f"Error updating counter: {e}")
+        return count
+
+def get_current_price():
+    """Get current price based on order count"""
+    count = get_order_count()
+    if count < PROMO_LIMIT:
+        return PROMO_PRICE, True, PROMO_LIMIT - count  # price, is_promo, remaining_spots
+    return REGULAR_PRICE, False, 0
+
 # Create Blueprint
 payment_bp = Blueprint('payment', __name__)
+
+@payment_bp.route('/api/current-price', methods=['GET'])
+def current_price():
+    """Get current price and promo status"""
+    price, is_promo, remaining = get_current_price()
+    return jsonify({
+        'price': price,
+        'is_promo': is_promo,
+        'remaining_spots': remaining,
+        'promo_limit': PROMO_LIMIT,
+        'regular_price': REGULAR_PRICE
+    })
 
 @payment_bp.route('/api/create-checkout', methods=['POST'])
 def create_checkout():
@@ -24,8 +76,16 @@ def create_checkout():
         selections = data.get('selections', {})
         # No preview image - we'll regenerate all pages fresh
         
-        # Calculate price (in cents)
-        amount = 999 if format_type == 'pdf' else 2499  # $9.99 or $24.99
+        # Get current price (promotional or regular)
+        base_price, is_promo, remaining = get_current_price()
+        
+        # Calculate price (in cents) - only PDF gets promo, physical stays same
+        if format_type == 'pdf':
+            amount = int(base_price * 100)  # Convert to cents
+            if is_promo:
+                print(f"🎉 PROMO APPLIED: ${base_price} (Spot #{get_order_count() + 1}/{PROMO_LIMIT})")
+        else:
+            amount = 2499  # Physical book stays $24.99
         
         # Calculate page count
         pages = selections.get('pages', 24)
@@ -35,6 +95,10 @@ def create_checkout():
             description = f"{bw_pages} B&W + {colored_pages} Colored pages = {pages} total"
         else:
             description = f"{pages} Black & White coloring pages"
+        
+        # Add promo badge to description
+        if format_type == 'pdf' and is_promo:
+            description = f"🎉 LAUNCH PROMO #{get_order_count() + 1}/{PROMO_LIMIT} | {description}"
         
         # Prepare checkout session configuration
         session_config = {
@@ -117,8 +181,12 @@ def stripe_webhook():
         if event['type'] == 'checkout.session.completed':
             session = event['data']['object']
             
+            # Increment order counter for successful payment
+            order_number = increment_order_count()
+            
             print(f"\n{'='*60}")
             print(f"💳 Payment successful! Session ID: {session['id']}")
+            print(f"🎯 Order #{order_number}")
             print(f"{'='*60}")
             
             # Extract customer info
@@ -135,7 +203,12 @@ def stripe_webhook():
             print(f"📧 Customer: {customer_email}")
             print(f"💰 Amount: ${amount:.2f} USD")
             print(f"📦 Format: {format_type} | Type: {book_type} | Pages: {pages}")
-            print(f"🎨 Theme: {theme}\n")
+            print(f"🎨 Theme: {theme}")
+            
+            # Show promo status
+            if format_type == 'pdf' and order_number <= PROMO_LIMIT:
+                print(f"🎉 PROMO ORDER: {order_number}/{PROMO_LIMIT}")
+            print()
             
             # STEP 1: Send immediate payment confirmation email
             print("📨 Step 1: Sending payment confirmation email...")
@@ -146,7 +219,8 @@ def stripe_webhook():
                 'bookType': book_type,
                 'pages': pages,
                 'theme': theme,
-                'amount': f"{amount:.2f}"
+                'amount': f"{amount:.2f}",
+                'order_number': order_number
             }
             
             confirmation_sent = send_payment_confirmation(customer_email, order_details)
