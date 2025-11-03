@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <defs>
+    <linearGradient id="bookGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#FF6B9D;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#C239B3;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#7928CA;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="pageGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#FFF5E1;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#FFE4B5;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Book shadow -->
+  <ellipse cx="50" cy="88" rx="30" ry="6" fill="#000000" opacity="0.1"/>
+  
+  <!-- Book cover -->
+  <rect x="20" y="15" width="60" height="70" rx="4" fill="url(#bookGradient)"/>
+  
+  <!-- Book spine highlight -->
+  <rect x="20" y="15" width="8" height="70" rx="4" fill="#000000" opacity="0.15"/>
+  
+  <!-- Pages -->
+  <path d="M 75 20 L 75 80 Q 75 82 73 82 L 27 82 Q 25 82 25 80 L 25 20 Q 25 18 27 18 L 73 18 Q 75 18 75 20 Z" 
+        fill="url(#pageGradient)" stroke="#E8D4A5" stroke-width="0.5"/>
+  
+  <!-- Page lines (simulating coloring book pages) -->
+  <line x1="35" y1="30" x2="65" y2="30" stroke="#FF6B9D" stroke-width="2" stroke-linecap="round" opacity="0.6"/>
+  <path d="M 40 38 Q 45 35 50 38 Q 55 41 60 38" stroke="#FFA500" stroke-width="2" fill="none" stroke-linecap="round" opacity="0.6"/>
+  
+  <!-- Star decoration -->
+  <path d="M 50 48 L 52 54 L 58 54 L 53 58 L 55 64 L 50 60 L 45 64 L 47 58 L 42 54 L 48 54 Z" 
+        fill="#FFD700" stroke="#FFA500" stroke-width="0.5" opacity="0.8"/>
+  
+  <!-- Heart decoration -->
+  <path d="M 50 72 C 50 72, 45 68, 43 70 C 41 72, 41 74, 43 76 L 50 82 L 57 76 C 59 74, 59 72, 57 70 C 55 68, 50 72, 50 72 Z" 
+        fill="#FF6B9D" opacity="0.6"/>
+  
+  <!-- Sparkle effects -->
+  <circle cx="28" cy="25" r="1.5" fill="#FFD700" opacity="0.8"/>
+  <circle cx="72" cy="30" r="1" fill="#FFD700" opacity="0.8"/>
+  <circle cx="68" cy="75" r="1.5" fill="#FFD700" opacity="0.8"/>
+  
+  <!-- Book title accent -->
+  <rect x="30" y="22" width="40" height="2" rx="1" fill="#FFFFFF" opacity="0.4"/>
+</svg>
