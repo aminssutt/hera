@@ -14,12 +14,15 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Configure CORS pour permettre les requêtes depuis Vercel
+# Configure CORS pour permettre les requêtes depuis Vercel et domaine custom
 CORS(app, origins=[
-    'https://hera-seven.vercel.app',  # Production Vercel
-    'https://hera-*.vercel.app',      # Preview deployments Vercel
+    'https://www.herastudio.art',      # Custom domain (www)
+    'https://herastudio.art',          # Custom domain (apex)
+    'https://hera-seven.vercel.app',   # Production Vercel
+    'https://hera-*.vercel.app',       # Preview deployments Vercel
     'http://localhost:3000',           # Dev local
     'http://localhost:5173',           # Vite dev server
+    'http://localhost:3001',           # Dev local (alternative port)
 ], supports_credentials=True)
 
 # Register payment blueprint
