@@ -56,6 +56,14 @@ def increment_order_count():
                 'promo_orders': min(count, PROMO_LIMIT),
                 'last_updated': datetime.now().isoformat()
             }, f, indent=2)
+        
+        # Log reminder to update environment variable on Render
+        print("\n" + "="*70)
+        print("🔔 ACTION REQUIRED ON RENDER:")
+        print(f"   Update environment variable: INITIAL_ORDER_COUNT={count}")
+        print(f"   This ensures counter persists after server restarts")
+        print("="*70 + "\n")
+        
         return count
     except Exception as e:
         print(f"Error updating counter: {e}")
@@ -70,6 +78,25 @@ def get_current_price():
 
 # Create Blueprint
 payment_bp = Blueprint('payment', __name__)
+
+@payment_bp.route('/api/admin/set-counter/<int:count>', methods=['POST'])
+def set_counter_admin(count):
+    """TEMPORARY ADMIN ENDPOINT - Set counter manually (remove after use)"""
+    try:
+        with open(COUNTER_FILE, 'w') as f:
+            json.dump({
+                'total_orders': count,
+                'promo_orders': min(count, PROMO_LIMIT),
+                'last_updated': datetime.now().isoformat(),
+                'manually_set': True
+            }, f, indent=2)
+        return jsonify({
+            'success': True,
+            'message': f'Counter set to {count}',
+            'remaining_promo_spots': max(0, PROMO_LIMIT - count)
+        })
+    except Exception as e:
+        return jsonify({'success': False, 'error': str(e)}), 500
 
 @payment_bp.route('/api/current-price', methods=['GET'])
 def current_price():
