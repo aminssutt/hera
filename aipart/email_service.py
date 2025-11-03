@@ -66,13 +66,14 @@ def send_email_via_sendgrid(to_email, subject, html_content, attachment_path=Non
         return False
 
 
-def send_payment_confirmation(to_email, order_details):
+def send_payment_confirmation(to_email, order_details, session_id=None):
     """
     Send payment confirmation email immediately after successful payment
     
     Args:
         to_email (str): Customer email address
         order_details (dict): Order information (format, bookType, pages, theme, amount)
+        session_id (str): Stripe session ID for tracking link
     
     Returns:
         bool: True if sent successfully
@@ -141,18 +142,27 @@ def send_payment_confirmation(to_email, order_details):
                         </div>
                     </div>
                     <div class="timeline-item">
-                        <span class="timeline-icon">📧</span>
+                        <span class="timeline-icon">🌐</span>
                         <div>
-                            <strong>Step 3: Email Delivery</strong><br>
-                            <small style="color: #6c757d;">Arriving soon</small>
+                            <strong>Step 3: Ready on Website</strong><br>
+                            <small style="color: #6c757d;">You'll be able to view and download your PDF</small>
                         </div>
                     </div>
                 </div>
                 
-                <p style="background: #fff3cd; padding: 15px; border-radius: 8px; border-left: 4px solid #ffc107;">
+                <p style="background: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 4px solid #2196f3;">
                     ⏳ <strong>Please wait 10-30 minutes</strong> while our AI creates {pages} unique coloring pages for you.
-                    You'll receive another email with your complete book as a PDF attachment!
+                    Your PDF will be ready to view and download on the success page. Keep this page open or return to it using your order confirmation email!
                 </p>
+                
+                <div style="text-align: center; margin: 20px 0;">
+                    <a href="{os.getenv('FRONTEND_URL', 'https://herastudio.art')}/success?session_id={session_id}" 
+                       style="background: linear-gradient(135deg, #E891C8, #A97DC0); color: white; 
+                              padding: 15px 30px; text-decoration: none; border-radius: 25px; 
+                              display: inline-block; font-weight: bold;">
+                        📖 View Your Book Status
+                    </a>
+                </div>
             </div>
             
             <div class="footer">

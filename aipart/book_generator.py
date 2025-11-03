@@ -9,7 +9,6 @@ from google import genai
 from google.genai import types
 from dotenv import load_dotenv
 from pdf_generator import create_coloring_book_pdf, combine_bw_and_colored
-from email_service import send_pdf_email
 from PIL import Image
 import io
 
@@ -285,17 +284,9 @@ def generate_complete_book(session_data, preview_image_base64=None):
             print(f"✅ PDF created successfully: {pdf_path}")
             print(f"   File size: {os.path.getsize(pdf_path) / 1024 / 1024:.2f} MB\n")
             
-            # Send email with PDF
-            print(f"📧 Sending email to {customer_email}...")
-            email_sent = send_pdf_email(customer_email, pdf_path, book_details)
-            
-            if email_sent:
-                print(f"✅ Email sent successfully!")
-            else:
-                print(f"⚠️ Email failed, but PDF is saved at: {pdf_path}")
-            
             print(f"\n{'='*60}")
             print(f"🎉 Book generation complete for {customer_email}!")
+            print(f"   PDF available for download on website")
             print(f"{'='*60}\n")
             
             return pdf_path

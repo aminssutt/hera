@@ -128,10 +128,6 @@ const Success = () => {
                     className="w-3 h-3 bg-hera-pink rounded-full"
                   />
                 </div>
-                
-                <p className="text-md font-fredoka text-gray-600 mt-4">
-                  {t('success.emailNotification')}
-                </p>
               </motion.div>
             )}
 
@@ -198,10 +194,6 @@ const Success = () => {
                     </motion.div>
                   )}
                 </AnimatePresence>
-
-                <p className="text-md font-fredoka text-gray-600">
-                  {t('success.checkEmail')}
-                </p>
               </motion.div>
             )}
           </AnimatePresence>

@@ -28,6 +28,10 @@ CORS(app, origins=[
 # Register payment blueprint
 app.register_blueprint(payment_bp)
 
+# Initialize order counter
+from payment import initialize_counter
+initialize_counter()
+
 # Start the generation queue worker
 from generation_queue import start_queue_worker
 start_queue_worker()

@@ -16,6 +16,23 @@ PROMO_LIMIT = int(os.getenv('PROMO_FIRST_CUSTOMERS', 100))
 PROMO_PRICE = float(os.getenv('PROMO_PRICE', 1.99))
 REGULAR_PRICE = float(os.getenv('REGULAR_PRICE', 9.99))
 COUNTER_FILE = 'order_counter.json'
+# Get initial counter from environment variable (persists across deployments on Render)
+INITIAL_ORDER_COUNT = int(os.getenv('INITIAL_ORDER_COUNT', '0'))
+
+def initialize_counter():
+    """Initialize counter file if it doesn't exist"""
+    if not os.path.exists(COUNTER_FILE):
+        with open(COUNTER_FILE, 'w') as f:
+            json.dump({
+                'total_orders': INITIAL_ORDER_COUNT,
+                'promo_orders': min(INITIAL_ORDER_COUNT, PROMO_LIMIT),
+                'last_updated': datetime.now().isoformat(),
+                'initialized': datetime.now().isoformat()
+            }, f, indent=2)
+        print(f"✅ Counter initialized at {INITIAL_ORDER_COUNT} orders (from env var)")
+    else:
+        count = get_order_count()
+        print(f"📊 Counter loaded: {count} orders completed")
 
 def get_order_count():
     """Get current order count"""
@@ -223,7 +240,7 @@ def stripe_webhook():
                 'order_number': order_number
             }
             
-            confirmation_sent = send_payment_confirmation(customer_email, order_details)
+            confirmation_sent = send_payment_confirmation(customer_email, order_details, session['id'])
             
             if confirmation_sent:
                 print("✅ Payment confirmation sent!\n")
