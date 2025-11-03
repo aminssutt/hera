@@ -399,7 +399,7 @@ def contact_feedback():
         
         # Send feedback email to Hera
         send_email_via_sendgrid(
-            to_email='hera.work.noreply@gmail.com',
+            to_email='contact@herastudio.art',
             subject=f'📢 New Feedback from {first_name} {last_name} - Rating: {rating}/5',
             html_content=email_body
         )
@@ -422,7 +422,7 @@ def contact_feedback():
             <p>Best regards,<br><strong>The Hera Team</strong></p>
             
             <div style="margin-top: 30px; padding-top: 20px; border-top: 2px solid #e5e7eb; color: #6b7280; font-size: 12px;">
-                <p>Questions? Contact us at: hera.work.noreply@gmail.com</p>
+                <p>Questions? Contact us at: contact@herastudio.art</p>
             </div>
         </div>
         """

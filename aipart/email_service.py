@@ -13,7 +13,7 @@ load_dotenv()
 
 # SendGrid Configuration
 SENDGRID_API_KEY = os.getenv('SENDGRID_API_KEY')
-FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'hera.work.noreply@gmail.com')  # Your verified sender email
+FROM_EMAIL = os.getenv('SENDGRID_FROM_EMAIL', 'contact@herastudio.art')  # Your verified sender email
 
 
 def send_email_via_sendgrid(to_email, subject, html_content, attachment_path=None):
@@ -32,7 +32,7 @@ def send_email_via_sendgrid(to_email, subject, html_content, attachment_path=Non
     try:
         # Create message with friendly sender name
         message = Mail(
-            from_email=('hera.work.noreply@gmail.com', 'Hera - Kids Coloring Books'),
+            from_email=('contact@herastudio.art', 'Hera - Kids Coloring Books'),
             to_emails=to_email,
             subject=subject,
             html_content=html_content
@@ -156,7 +156,7 @@ def send_payment_confirmation(to_email, order_details):
             </div>
             
             <div class="footer">
-                <p>Questions? Reply to this email or contact us at hera.work.noreply@gmail.com</p>
+                <p>Questions? Reply to this email or contact us at contact@herastudio.art</p>
                 <p>© 2025 Hera - Custom AI Coloring Books</p>
             </div>
         </div>
@@ -241,7 +241,7 @@ def send_pdf_email(to_email, pdf_path, book_details):
             
             <div class="footer">
                 <p>Thank you for choosing Hera! ❤️</p>
-                <p>Questions? Reply to this email or contact us at hera.work.noreply@gmail.com</p>
+                <p>Questions? Reply to this email or contact us at contact@herastudio.art</p>
                 <p>© 2025 Hera - Custom AI Coloring Books</p>
             </div>
         </div>
@@ -311,7 +311,7 @@ def send_physical_book_confirmation(to_email, order_details):
             </div>
             
             <div class="footer">
-                <p>Questions? Reply to this email or contact us at hera.work.noreply@gmail.com</p>
+                <p>Questions? Reply to this email or contact us at contact@herastudio.art</p>
                 <p>© 2025 Hera - Custom AI Coloring Books</p>
             </div>
         </div>
