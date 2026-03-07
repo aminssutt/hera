@@ -1,171 +1,125 @@
-# 🎨 Hēra - Custom Kids Coloring Books
+<div align="center">
 
-Create magical, personalized coloring books for children using Generative AI! ✨
+# Hēra · AI-Powered Custom Kids Coloring Books
 
-## 🌟 Features
+Build personalized coloring books in minutes with a playful React experience and an AI + payments backend.
 
-- **Interactive Theme Selection**: Choose from Animals, Nature, Fantasy, Science, Transport, and more
-- **Art Style Customization**: Ghibli, Cartoon, Comic, Minimal, and other styles
-- **Fully Customizable**: 
-  - Number of pages (10-30)
-  - Difficulty levels (Easy, Medium, Hard)
-  - Color themes
-- **Beautiful Animations**: Smooth transitions and playful interactions
-- **Child-Friendly Design**: Colorful, fun, and engaging interface
+![React](https://img.shields.io/badge/React-18-61DAFB?style=for-the-badge&logo=react&logoColor=white)
+![Vite](https://img.shields.io/badge/Vite-5-646CFF?style=for-the-badge&logo=vite&logoColor=white)
+![Tailwind CSS](https://img.shields.io/badge/Tailwind-3-38B2AC?style=for-the-badge&logo=tailwindcss&logoColor=white)
+![Flask](https://img.shields.io/badge/Flask-Backend-000000?style=for-the-badge&logo=flask&logoColor=white)
 
-## 🚀 Tech Stack
+</div>
 
-- **React 18** - UI framework
-- **Vite** - Build tool and dev server
-- **Tailwind CSS** - Utility-first CSS
-- **Framer Motion** - Animations
-- **React Router** - Navigation
-- **Flask (Python)** - Backend API server
-- **Google Imagen AI** - Image generation
-- **Stripe** - Payment processing (Kakao Pay, Naver Pay, Cards)
-- **Resend** - Email delivery
-- **ReportLab** - PDF generation
+## Why Hēra
+Hēra helps families and creators generate kid-friendly coloring books from custom themes, styles, and difficulty levels.
+The project combines:
+- a **modern, animated frontend** for guided customization,
+- a **Python backend** for generation and order workflow,
+- and **Stripe-powered checkout** for digital and physical products.
 
-## 📦 Installation
+## Hera Brand Palette
+Use the project palette for product pages, previews, and social/portfolio showcases:
 
-### Frontend (React)
+![Hera Pink](https://img.shields.io/badge/Hera%20Pink-%23E891C8-E891C8?style=for-the-badge)
+![Hera Purple](https://img.shields.io/badge/Hera%20Purple-%23A97DC0-A97DC0?style=for-the-badge)
+![Hera Blue](https://img.shields.io/badge/Hera%20Blue-%235EB3E4-5EB3E4?style=for-the-badge)
+![Hera Green](https://img.shields.io/badge/Hera%20Green-%237FD687-7FD687?style=for-the-badge)
+![Hera Yellow](https://img.shields.io/badge/Hera%20Yellow-%23FFE347-FFE347?style=for-the-badge)
+![Hera Orange](https://img.shields.io/badge/Hera%20Orange-%23FFAA7A-FFAA7A?style=for-the-badge)
 
+## Core Features
+- **Step-by-step customization wizard** (theme, art style, pages, difficulty, colors)
+- **AI-assisted preview generation** for personalized content
+- **Child-friendly and responsive interface** with smooth motion transitions
+- **Multi-method checkout support** via Stripe (including Korean payment options)
+- **Email and PDF workflow hooks** for digital delivery
+
+## Tech Stack
+### Frontend
+- React 18
+- Vite
+- Tailwind CSS
+- Framer Motion
+- React Router
+- i18next
+
+### Backend
+- Flask (Python)
+- Google Imagen client integration
+- Stripe
+- Resend
+- ReportLab
+
+## Quick Start
+### 1) Frontend
 ```bash
-# Install dependencies
+cd /home/runner/work/hera/hera
 npm install
-
-# Start development server
 npm run dev
 ```
+Frontend runs on `http://localhost:3000`.
 
-The frontend will run on `http://localhost:3000`
-
-### Backend (Python Flask)
-
+### 2) Backend
 ```bash
-# Navigate to backend folder
-cd aipart
-
-# Install Python dependencies
+cd /home/runner/work/hera/hera/aipart
 pip install -r requirements.txt
-
-# Start Flask server
 python generated_image.py
 ```
+Backend runs on `http://localhost:5000`.
 
-The backend will run on `http://localhost:5000`
+> Both frontend and backend must run together for end-to-end generation and checkout flow.
 
-**⚠️ Important:** Both frontend and backend must be running for the AI generation to work!
-
-## 💳 Payment Integration
-
-Hēra supports multiple payment methods through Stripe:
-
-### 🇰🇷 Korean Payment Methods:
-- **Kakao Pay** (카카오페이)
-- **Naver Pay** (네이버페이)
+## Payments
+Supported methods include:
+- **Kakao Pay**
+- **Naver Pay**
 - **Samsung Pay**
 - **PayCo**
+- **Credit/Debit cards**
+- **Apple Pay / Google Pay**
 
-### 🌍 International:
-- Credit/Debit Cards (Visa, Mastercard, Amex)
-- Apple Pay
-- Google Pay
+Pricing:
+- **Digital PDF**: $9.99
+- **Physical Book**: $24.99
 
-### Pricing:
-- **Digital PDF**: $9.99 USD
-- **Physical Book**: $24.99 USD
+Test card:
+- `4242 4242 4242 4242`
+- Exp: `12/25`, CVC: `123`
 
-### Testing Payment:
-Use test card: `4242 4242 4242 4242` (Exp: `12/25`, CVC: `123`)
+## Security Notes
+For a production-ready deployment, keep the following controls in place:
+- Keep API keys and payment secrets only in `.env` files (never in source control).
+- Use `/home/runner/work/hera/hera/.env.example` and `/home/runner/work/hera/hera/aipart/.env.example` as templates.
+- Rotate compromised or shared keys immediately.
+- Restrict backend CORS and callback URLs to trusted domains only.
+- Validate payment/session state server-side before fulfillment.
+- Run regular dependency checks (`npm audit`, Python dependency scans) before releases.
 
-For detailed payment setup and testing instructions, see:
-- **[PAYMENT_SETUP.md](PAYMENT_SETUP.md)** - Stripe configuration guide
-- **[TESTING_GUIDE.md](TESTING_GUIDE.md)** - How to test payments
-- **[STRIPE_INTEGRATION_FR.md](STRIPE_INTEGRATION_FR.md)** - Guide en français
-
-## 🎯 Project Structure
-
-```
-Hera/
-├── src/
-│   ├── components/
-│   │   ├── AnimatedBackground.jsx
-│   │   ├── Modal.jsx
-│   │   └── steps/
-│   │       ├── StepOne.jsx    # Theme selection
-│   │       ├── StepTwo.jsx    # Art style selection
-│   │       ├── StepThree.jsx  # Pages, difficulty, colors
-│   │       └── StepFour.jsx   # AI Preview & Payment
-│   ├── pages/
-│   │   ├── Home.jsx           # Landing page
-│   │   ├── Customize.jsx      # Customization wizard
-│   │   ├── Success.jsx        # Payment success page
-│   │   └── Cancel.jsx         # Payment cancelled page
-│   ├── App.jsx
-│   ├── main.jsx
-│   └── index.css
-├── aipart/
-│   ├── generated_image.py     # Flask backend
-│   ├── payment.py             # Stripe payment handling
-│   ├── email_service.py       # Email delivery (Resend)
-│   ├── pdf_generator.py       # PDF creation (ReportLab)
-│   ├── requirements.txt       # Python dependencies
-│   ├── .env                   # API keys (not in Git)
-│   ├── .env.example           # Example configuration
-│   ├── generated_images/      # Generated images folder
-│   └── README.md              # Backend documentation
-├── public/
-│   └── images/                # Static images
-├── index.html
-├── package.json
-├── vite.config.js
-└── tailwind.config.js
+## Project Structure
+```text
+/home/runner/work/hera/hera
+├── src/                  # React app (pages, components, steps)
+├── public/               # Static assets
+├── aipart/               # Flask backend and generation/payment services
+├── images/               # Design assets
+├── package.json          # Frontend scripts
+└── README.md             # Project overview
 ```
 
-## 🎨 Design Features
-
-- Animated background with rockets, stars, and planets
-- Smooth slide animations between steps
-- Responsive design for all devices
-- Custom color palette:
-  - Hera Pink: `#E891C8`
-  - Hera Purple: `#A97DC0`
-  - Hera Blue: `#5EB3E4`
-  - Hera Green: `#7FD687`
-  - Hera Yellow: `#FFE347`
-  - Hera Orange: `#FFAA7A`
-
-## 🛣️ Roadmap
-
-- [x] Home page with "How it Works" section
-- [x] Theme & style selection (Steps 1-2)
-- [x] Customization options (Step 3)
-- [x] AI preview generation (Step 4)
-- [x] Flask backend integration
-- [x] Stripe payment integration (Kakao Pay, Naver Pay, Samsung Pay, PayCo, Cards)
-- [x] Success and Cancel pages
-- [x] Email service setup (Resend)
-- [x] PDF generator setup (ReportLab)
-- [ ] Complete book generation (multiple pages)
-- [ ] PDF download functionality via email
-- [ ] Physical book ordering and fulfillment
+## Roadmap
+- [x] Home page + guided customization flow
+- [x] Backend generation integration
+- [x] Stripe payment integration
+- [x] Success/cancel flow
+- [ ] Multi-page full-book generation
+- [ ] Automated PDF delivery pipeline
+- [ ] Physical fulfillment workflow
 - [ ] User accounts and order history
 - [ ] Admin dashboard
-- [ ] Colored page generation with user colors
 
-## 👨‍💻 Development
-
-This project uses:
-- **Fredoka** font family for readable text
-- **Bubblegum Sans** for playful headings
-- Custom animations with Framer Motion
-- Tailwind CSS for rapid styling
-
-## 📝 License
-
-MIT License - Feel free to use this project for learning or commercial purposes!
+## License
+MIT
 
 ---
-
-Made with 💖 for kids around the world! 🌈
+Built for a creative, family-friendly experience — ready to showcase on portfolio and LinkedIn.
