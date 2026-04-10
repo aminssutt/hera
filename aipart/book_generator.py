@@ -8,7 +8,7 @@ from datetime import datetime
 from google import genai
 from google.genai import types
 from dotenv import load_dotenv
-from pdf_generator import create_coloring_book_pdf, combine_bw_and_colored
+from pdf_generator import open_pdf_canvas, append_image_to_canvas, finalize_pdf
 from PIL import Image
 import io
 
@@ -186,114 +186,127 @@ def generate_single_page(theme, topic, difficulty, is_colored=False, colors=None
 
 def generate_complete_book(session_data, preview_image_base64=None):
     """
-    Generate a complete coloring book based on payment session data
-    
+    Generate a complete coloring book based on payment session data.
+
+    Uses a streaming approach: each page is generated, written to the PDF
+    canvas, and its temp file deleted before moving to the next page.
+    This keeps RAM usage at O(1) images regardless of page count.
+
     Args:
-        session_data (dict): Payment session with metadata
-        preview_image_base64 (str): IGNORED - we regenerate all pages fresh
-    
+        session_data: Stripe session object or dict with metadata
+        preview_image_base64: IGNORED – all pages are regenerated fresh
+
     Returns:
         str: Path to generated PDF, or None if failed
     """
     try:
-        # Extract metadata
+        # ── Extract metadata ──────────────────────────────────────────────
         metadata = session_data.get('metadata', {})
         customer_email = session_data.get('customer_details', {}).get('email')
-        
+
         format_type = metadata.get('format', 'pdf')
-        book_type = metadata.get('bookType', 'blackwhite')
+        book_type   = metadata.get('bookType', 'blackwhite')
         total_pages = int(metadata.get('pages', 24))
-        theme = metadata.get('theme', '').split(',') if ',' in metadata.get('theme', '') else [metadata.get('theme', 'Custom')]
-        topic = metadata.get('topic', 'Cartoon')
-        difficulty = metadata.get('difficulty', 'Easy')
-        
+        raw_theme   = metadata.get('theme', 'Custom')
+        theme       = raw_theme.split(',') if ',' in raw_theme else [raw_theme]
+        topic       = metadata.get('topic', 'Cartoon')
+        difficulty  = metadata.get('difficulty', 'Easy')
+
         try:
             colors = json.loads(metadata.get('colors', '[]'))
-        except:
+        except Exception:
             colors = []
-        
+
         print(f"\n{'='*60}")
         print(f"📚 Starting book generation for {customer_email}")
-        print(f"   Format: {format_type} | Type: {book_type} | Total Pages: {total_pages}")
+        print(f"   Format: {format_type} | Type: {book_type} | Pages: {total_pages}")
         print(f"   Theme: {', '.join(theme)} | Style: {topic} | Difficulty: {difficulty}")
-        print(f"   🎨 Generating ALL {total_pages} pages fresh (no preview reuse)")
         print(f"{'='*60}\n")
-        
-        bw_images = []
-        colored_images = []
-        
-        # Generate all pages fresh (ignoring preview)
+
+        # ── Prepare output paths ──────────────────────────────────────────
+        timestamp    = datetime.now().strftime('%Y%m%d_%H%M%S')
+        pdf_filename = f"coloring_book_{timestamp}.pdf"
+        pdf_path     = os.path.join(PDF_FOLDER, pdf_filename)
+
+        book_details = {
+            'theme'     : theme if isinstance(theme, str) else ', '.join(theme),
+            'style'     : topic,
+            'pages'     : total_pages,
+            'difficulty': difficulty,
+            'book_type' : book_type,
+            'format'    : format_type,
+        }
+
+        # ── Open canvas once (title page already added) ───────────────────
+        c        = open_pdf_canvas(pdf_path, book_details)
+        pdf_page = 0  # tracks pages written to canvas
+
         if book_type == 'blackwhite':
-            # Black & white only: generate all total_pages B&W pages
-            print(f"🖤 Generating {total_pages} black & white pages...")
+            # ── B&W: generate → write → delete → next ────────────────────
+            print(f"🖤 Generating {total_pages} B&W pages (streaming)...")
             for i in range(total_pages):
                 page_num = i + 1
-                img_path = generate_single_page(theme, topic, difficulty, is_colored=False, page_num=page_num)
-                if img_path:
-                    bw_images.append(img_path)
-        
-        else:
-            # Colored edition: Generate HALF as B&W, then color the same images
-            # Ex: total_pages=10 → 5 B&W + 5 colored (same images colored)
-            num_bw_pages = total_pages // 2
-            print(f"🖤 Step 1: Generating {num_bw_pages} black & white pages...")
-            bw_source_images = []
-            for i in range(num_bw_pages):
-                page_num = i + 1
-                img_path = generate_single_page(theme, topic, difficulty, is_colored=False, page_num=page_num)
-                if img_path:
-                    bw_source_images.append(img_path)
-                    bw_images.append(img_path)
-            
-            print(f"\n🌈 Step 2: Coloring the same {len(bw_source_images)} pages with Gemini...")
-            for i, bw_img_path in enumerate(bw_source_images):
-                page_num = i + 1
-                colored_path = generate_single_page(
-                    theme, topic, difficulty, 
-                    is_colored=True, 
-                    colors=colors, 
-                    page_num=page_num,
-                    source_image_path=bw_img_path  # Colorier cette image B&W spécifique
+                img_path = generate_single_page(
+                    theme, topic, difficulty, is_colored=False, page_num=page_num
                 )
+                if img_path:
+                    pdf_page += 1
+                    append_image_to_canvas(c, img_path, page_number=pdf_page, delete_after=True)
+                    print(f"   ✅ Page {page_num}/{total_pages} written to PDF (temp file deleted)")
+                else:
+                    print(f"   ⚠️  Page {page_num} generation failed – skipping")
+
+        else:
+            # ── Colored: for each slot generate B&W, color it, write both,
+            #    delete both – only 2 images in RAM at a time ──────────────
+            num_slots = total_pages // 2
+            print(f"🌈 Generating {num_slots} B&W + {num_slots} colored pages (streaming)...")
+            for i in range(num_slots):
+                page_num = i + 1
+
+                # Step A – generate the B&W version
+                bw_path = generate_single_page(
+                    theme, topic, difficulty, is_colored=False, page_num=page_num
+                )
+                if not bw_path:
+                    print(f"   ⚠️  B&W page {page_num} failed – skipping slot")
+                    continue
+
+                # Step B – color it (pass the B&W file as source)
+                colored_path = generate_single_page(
+                    theme, topic, difficulty,
+                    is_colored=True,
+                    colors=colors,
+                    page_num=page_num,
+                    source_image_path=bw_path,
+                )
+
+                # Step C – write B&W page to PDF, delete temp file
+                pdf_page += 1
+                append_image_to_canvas(c, bw_path, page_number=pdf_page, delete_after=True)
+
+                # Step D – write colored page to PDF, delete temp file
                 if colored_path:
-                    colored_images.append(colored_path)
-        
-        # Generate PDF
-        print(f"\n📄 Compiling PDF...")
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        pdf_filename = f"coloring_book_{timestamp}.pdf"
-        pdf_path = os.path.join(PDF_FOLDER, pdf_filename)
-        
-        book_details = {
-            'theme': theme if isinstance(theme, str) else ', '.join(theme),
-            'style': topic,
-            'pages': total_pages,
-            'difficulty': difficulty,
-            'book_type': book_type,
-            'format': format_type
-        }
-        
-        if book_type == 'colored' and colored_images:
-            # Interleave B&W and colored
-            success = combine_bw_and_colored(bw_images, colored_images, pdf_path, book_details)
-        else:
-            # Just B&W pages
-            success = create_coloring_book_pdf(bw_images, pdf_path, book_details)
-        
-        if success:
-            print(f"✅ PDF created successfully: {pdf_path}")
-            print(f"   File size: {os.path.getsize(pdf_path) / 1024 / 1024:.2f} MB\n")
-            
-            print(f"\n{'='*60}")
-            print(f"🎉 Book generation complete for {customer_email}!")
-            print(f"   PDF available for download on website")
-            print(f"{'='*60}\n")
-            
-            return pdf_path
-        else:
-            print(f"❌ Failed to create PDF")
+                    pdf_page += 1
+                    append_image_to_canvas(c, colored_path, page_number=pdf_page, delete_after=True)
+
+                print(f"   ✅ Slot {page_num}/{num_slots} written to PDF (temp files deleted)")
+
+        # ── Save PDF ──────────────────────────────────────────────────────
+        if pdf_page == 0:
+            print("❌ No pages were generated – aborting PDF")
             return None
-            
+
+        finalize_pdf(c, pdf_path)
+        size_mb = os.path.getsize(pdf_path) / 1024 / 1024
+        print(f"✅ PDF created: {pdf_path}  ({size_mb:.2f} MB, {pdf_page} pages)\n")
+
+        print(f"\n{'='*60}")
+        print(f"🎉 Book generation complete for {customer_email}!")
+        print(f"{'='*60}\n")
+
+        return pdf_path
+
     except Exception as e:
         print(f"❌ Error in book generation: {str(e)}")
         import traceback

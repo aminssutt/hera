@@ -1,9 +1,14 @@
 import os
 import json
+import threading
+import tempfile
 import stripe
 from flask import Blueprint, request, jsonify
 from dotenv import load_dotenv
 from datetime import datetime
+
+# Lock for thread-safe counter operations (within one process)
+_counter_lock = threading.Lock()
 
 # Load environment variables
 load_dotenv()
@@ -19,16 +24,24 @@ COUNTER_FILE = 'order_counter.json'
 # Get initial counter from environment variable (persists across deployments on Render)
 INITIAL_ORDER_COUNT = int(os.getenv('INITIAL_ORDER_COUNT', '0'))
 
+def _write_counter_atomically(data):
+    """Write counter file atomically to prevent corruption on concurrent writes."""
+    dir_name = os.path.dirname(os.path.abspath(COUNTER_FILE)) or '.'
+    with tempfile.NamedTemporaryFile('w', dir=dir_name, delete=False, suffix='.tmp') as f:
+        json.dump(data, f, indent=2)
+        tmp_name = f.name
+    os.replace(tmp_name, COUNTER_FILE)
+
+
 def initialize_counter():
     """Initialize counter file if it doesn't exist"""
     if not os.path.exists(COUNTER_FILE):
-        with open(COUNTER_FILE, 'w') as f:
-            json.dump({
-                'total_orders': INITIAL_ORDER_COUNT,
-                'promo_orders': min(INITIAL_ORDER_COUNT, PROMO_LIMIT),
-                'last_updated': datetime.now().isoformat(),
-                'initialized': datetime.now().isoformat()
-            }, f, indent=2)
+        _write_counter_atomically({
+            'total_orders': INITIAL_ORDER_COUNT,
+            'promo_orders': min(INITIAL_ORDER_COUNT, PROMO_LIMIT),
+            'last_updated': datetime.now().isoformat(),
+            'initialized': datetime.now().isoformat()
+        })
         print(f"✅ Counter initialized at {INITIAL_ORDER_COUNT} orders (from env var)")
     else:
         count = get_order_count()
@@ -46,28 +59,28 @@ def get_order_count():
         return 0
 
 def increment_order_count():
-    """Increment order count and return new count"""
-    try:
-        count = get_order_count()
-        count += 1
-        with open(COUNTER_FILE, 'w') as f:
-            json.dump({
+    """Increment order count and return new count (thread-safe + atomic write)"""
+    with _counter_lock:
+        try:
+            count = get_order_count()
+            count += 1
+            _write_counter_atomically({
                 'total_orders': count,
                 'promo_orders': min(count, PROMO_LIMIT),
                 'last_updated': datetime.now().isoformat()
-            }, f, indent=2)
-        
-        # Log reminder to update environment variable on Render
-        print("\n" + "="*70)
-        print("🔔 ACTION REQUIRED ON RENDER:")
-        print(f"   Update environment variable: INITIAL_ORDER_COUNT={count}")
-        print(f"   This ensures counter persists after server restarts")
-        print("="*70 + "\n")
-        
-        return count
-    except Exception as e:
-        print(f"Error updating counter: {e}")
-        return count
+            })
+
+            # Log reminder to update environment variable on Render
+            print("\n" + "="*70)
+            print("🔔 ACTION REQUIRED ON RENDER:")
+            print(f"   Update environment variable: INITIAL_ORDER_COUNT={count}")
+            print(f"   This ensures counter persists after server restarts")
+            print("="*70 + "\n")
+
+            return count
+        except Exception as e:
+            print(f"Error updating counter: {e}")
+            return count
 
 def get_current_price():
     """Get current price based on order count"""
@@ -78,25 +91,6 @@ def get_current_price():
 
 # Create Blueprint
 payment_bp = Blueprint('payment', __name__)
-
-@payment_bp.route('/api/admin/set-counter/<int:count>', methods=['POST'])
-def set_counter_admin(count):
-    """TEMPORARY ADMIN ENDPOINT - Set counter manually (remove after use)"""
-    try:
-        with open(COUNTER_FILE, 'w') as f:
-            json.dump({
-                'total_orders': count,
-                'promo_orders': min(count, PROMO_LIMIT),
-                'last_updated': datetime.now().isoformat(),
-                'manually_set': True
-            }, f, indent=2)
-        return jsonify({
-            'success': True,
-            'message': f'Counter set to {count}',
-            'remaining_promo_spots': max(0, PROMO_LIMIT - count)
-        })
-    except Exception as e:
-        return jsonify({'success': False, 'error': str(e)}), 500
 
 @payment_bp.route('/api/current-price', methods=['GET'])
 def current_price():
@@ -212,14 +206,15 @@ def stripe_webhook():
     webhook_secret = os.getenv('STRIPE_WEBHOOK_SECRET')
     
     try:
-        # Verify webhook signature (if webhook secret is configured)
-        if webhook_secret:
-            event = stripe.Webhook.construct_event(
-                payload, sig_header, webhook_secret
-            )
-        else:
-            # For development without webhook secret
-            event = json.loads(payload)
+        if not webhook_secret:
+            print("❌ STRIPE_WEBHOOK_SECRET not configured — rejecting unverified webhook")
+            return jsonify({'success': False, 'error': 'Webhook not configured'}), 400
+
+        try:
+            event = stripe.Webhook.construct_event(payload, sig_header, webhook_secret)
+        except stripe.error.SignatureVerificationError:
+            print("❌ Stripe signature verification failed — possible forged webhook")
+            return jsonify({'success': False, 'error': 'Invalid signature'}), 400
         
         # Handle the checkout.session.completed event
         if event['type'] == 'checkout.session.completed':
@@ -295,7 +290,7 @@ def stripe_webhook():
         print(f"❌ Webhook error: {str(e)}")
         import traceback
         traceback.print_exc()
-        return jsonify({'success': False, 'error': str(e)}), 400
+        return jsonify({'success': False, 'error': 'Webhook processing failed'}), 400
 
 
 @payment_bp.route('/api/session-status/<session_id>', methods=['GET'])

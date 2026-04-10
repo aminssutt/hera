@@ -47,9 +47,20 @@ def process_queue():
                 
                 # Import here to avoid circular imports
                 from book_generator import generate_complete_book
-                
-                # Generate the book
-                pdf_path = generate_complete_book(job['session'], preview_image_base64=None)
+
+                # Generate the book with 1 retry on failure
+                pdf_path = None
+                for attempt in range(2):
+                    try:
+                        pdf_path = generate_complete_book(job['session'], preview_image_base64=None)
+                        if pdf_path:
+                            break
+                        print(f"⚠️ Attempt {attempt + 1} returned no PDF, {'retrying...' if attempt == 0 else 'giving up.'}")
+                    except Exception as attempt_err:
+                        print(f"⚠️ Attempt {attempt + 1} raised error: {str(attempt_err)}")
+                        if attempt == 1:
+                            import traceback
+                            traceback.print_exc()
                 
                 if pdf_path:
                     print(f"✅ Job {job['id']} completed successfully")
@@ -69,7 +80,18 @@ def process_queue():
                     except Exception as e:
                         print(f"⚠️ Failed to register session: {str(e)}")
                 else:
-                    print(f"❌ Job {job['id']} failed")
+                    print(f"❌ Job {job['id']} failed after all attempts — notifying customer")
+                    try:
+                        from email_service import send_generation_failed
+                        session = job['session']
+                        customer_email = session.customer_details.email if hasattr(session, 'customer_details') and session.customer_details else None
+                        if customer_email:
+                            send_generation_failed(customer_email)
+                            print(f"📧 Failure notification sent to {customer_email}")
+                        else:
+                            print("⚠️ No customer email found — could not send failure notification")
+                    except Exception as notify_err:
+                        print(f"⚠️ Failed to send failure notification: {str(notify_err)}")
                 
                 current_job = None
                 generation_queue.task_done()

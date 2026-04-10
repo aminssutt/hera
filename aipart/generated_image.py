@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify, send_file
 from flask_cors import CORS
 import os
+import re
 from datetime import datetime
 import base64
 from google import genai
@@ -14,15 +15,14 @@ load_dotenv()
 
 app = Flask(__name__)
 
-# Configure CORS pour permettre les requêtes depuis Vercel et domaine custom
+# Configure CORS — explicit origins only, no wildcards
 CORS(app, origins=[
-    'https://www.herastudio.art',      # Custom domain (www)
-    'https://herastudio.art',          # Custom domain (apex)
-    'https://hera-seven.vercel.app',   # Production Vercel
-    'https://hera-*.vercel.app',       # Preview deployments Vercel
-    'http://localhost:3000',           # Dev local
-    'http://localhost:5173',           # Vite dev server
-    'http://localhost:3001',           # Dev local (alternative port)
+    'https://www.herastudio.art',
+    'https://herastudio.art',
+    'https://hera-seven.vercel.app',
+    'http://localhost:3000',
+    'http://localhost:5173',
+    'http://localhost:3001',
 ], supports_credentials=True)
 
 # Register payment blueprint
@@ -50,6 +50,44 @@ if not API_KEY:
     raise ValueError("GOOGLE_API_KEY not found in environment variables. Please check your .env file.")
 
 client = genai.Client(api_key=API_KEY)
+
+# Allowed values for validated fields
+_ALLOWED_TOPICS = {'Ghibli', 'Cartoon', 'Minimal', 'Comic', 'Detailed', 'Magical'}
+_ALLOWED_DIFFICULTIES = {'Easy', 'Medium', 'Hard'}
+_HEX_COLOR_RE = re.compile(r'^#[0-9A-Fa-f]{6}$')
+
+
+def _validate_generate_params(params):
+    """Validate /api/generate request params. Returns (error_message, status_code) or (None, None)."""
+    if not isinstance(params, dict):
+        return 'Invalid request body', 400
+
+    theme = params.get('theme', [])
+    if not isinstance(theme, list) or not (1 <= len(theme) <= 5):
+        return 'theme must be a list of 1 to 5 items', 400
+    if any(not isinstance(t, str) or len(t) > 50 for t in theme):
+        return 'each theme must be a string up to 50 characters', 400
+
+    topic = params.get('topic', 'Cartoon')
+    if topic not in _ALLOWED_TOPICS:
+        return f'topic must be one of: {", ".join(sorted(_ALLOWED_TOPICS))}', 400
+
+    difficulty = params.get('difficulty', 'Easy')
+    if difficulty not in _ALLOWED_DIFFICULTIES:
+        return f'difficulty must be one of: {", ".join(sorted(_ALLOWED_DIFFICULTIES))}', 400
+
+    pages = params.get('pages', 10)
+    if not isinstance(pages, int) or not (10 <= pages <= 30):
+        return 'pages must be an integer between 10 and 30', 400
+
+    colors = params.get('colors', [])
+    if not isinstance(colors, list) or len(colors) > 10:
+        return 'colors must be a list of up to 10 items', 400
+    if any(not isinstance(c, str) or not _HEX_COLOR_RE.match(c) for c in colors):
+        return 'each color must be a valid hex value (e.g. #FF0000)', 400
+
+    return None, None
+
 
 def build_prompt(params):
     """Build a detailed, flattened, and negatively reinforced prompt for Imagen 4."""
@@ -133,6 +171,12 @@ def health():
 def generate():
     try:
         params = request.json
+
+        # Validate inputs before processing
+        error_msg, status_code = _validate_generate_params(params)
+        if error_msg:
+            return jsonify({'error': error_msg}), status_code
+
         print(f"Received params: {params}")
         
         # Build the prompt
@@ -167,7 +211,7 @@ def generate():
         print(f"Error in generate: {str(e)}")
         import traceback
         traceback.print_exc()
-        return jsonify({'error': str(e)}), 500
+        return jsonify({'error': 'Image generation failed. Please try again.'}), 500
 
 @app.route('/api/download/<filename>')
 def download(filename):

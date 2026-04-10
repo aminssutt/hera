@@ -330,3 +330,40 @@ def send_physical_book_confirmation(to_email, order_details):
     """
     
     return send_email_via_sendgrid(to_email, subject, html_content)
+
+
+def send_generation_failed(to_email):
+    """
+    Notify customer that book generation failed after all retry attempts.
+    Our support team will follow up for a retry or refund.
+
+    Args:
+        to_email (str): Customer email address
+
+    Returns:
+        bool: True if sent successfully
+    """
+    subject = "Issue with Your Hera Coloring Book"
+    html_content = """
+    <!DOCTYPE html>
+    <html>
+    <body style="font-family: Arial, sans-serif; color: #333; max-width: 600px; margin: auto; padding: 20px;">
+        <div style="background: linear-gradient(135deg, #E891C8, #A97DC0, #5EB3E4); padding: 30px; border-radius: 10px; text-align: center; color: white;">
+            <h1>&#127912; Hera - Coloring Books</h1>
+        </div>
+        <div style="background: #f9f9f9; padding: 30px; border-radius: 10px; margin-top: 20px;">
+            <h2>We're sorry &#128532;</h2>
+            <p>We encountered an unexpected issue while generating your coloring book and were unable to complete your order automatically.</p>
+            <p><strong>What happens next:</strong><br>
+            Our support team will reach out to you within 24 hours to either retry your book generation
+            or issue a full refund — whichever you prefer.</p>
+            <p>We sincerely apologize for the inconvenience. Thank you for your patience!</p>
+            <p>— The Hera Team</p>
+        </div>
+        <p style="text-align:center; color:#999; font-size:12px; margin-top:20px;">
+            Questions? Contact us directly at contact@herastudio.art
+        </p>
+    </body>
+    </html>
+    """
+    return send_email_via_sendgrid(to_email, subject, html_content)

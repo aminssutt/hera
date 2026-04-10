@@ -1,100 +1,108 @@
 import os
-from reportlab.lib.pagesizes import letter, A4
+from reportlab.lib.pagesizes import A4
 from reportlab.pdfgen import canvas
 from reportlab.lib.utils import ImageReader
-from reportlab.pdfbase import pdfmetrics
-from reportlab.pdfbase.ttfonts import TTFont
 from PIL import Image
 import io
-import requests
 
+
+# ---------------------------------------------------------------------------
+# Low-level streaming helpers
+# ---------------------------------------------------------------------------
+
+def open_pdf_canvas(output_path, book_details):
+    """
+    Open a new PDF canvas and add the title page.
+    Returns the canvas object; caller must call finalize_pdf() when done.
+    """
+    page_width, page_height = A4
+    c = canvas.Canvas(output_path, pagesize=A4)
+    add_title_page(c, book_details, page_width, page_height)
+    return c
+
+
+def append_image_to_canvas(c, img_path, page_number, delete_after=True):
+    """
+    Draw one image onto the next PDF page, then optionally delete the source file.
+    Call c.showPage() internally so the canvas is ready for the next image.
+
+    Args:
+        c: ReportLab Canvas opened by open_pdf_canvas()
+        img_path (str): Path to the image file
+        page_number (int): 1-based page number shown at the bottom
+        delete_after (bool): Delete the image file after writing to PDF
+    """
+    page_width, page_height = A4
+    padding = 36  # 0.5 inch
+
+    pil_img = Image.open(img_path)
+    if pil_img.mode != 'RGB':
+        pil_img = pil_img.convert('RGB')
+
+    img_w, img_h = pil_img.size
+    aspect = img_w / img_h
+    max_w = page_width - 2 * padding
+    max_h = page_height - 2 * padding
+
+    if aspect > 1:
+        new_w = min(max_w, img_w)
+        new_h = new_w / aspect
+        if new_h > max_h:
+            new_h = max_h
+            new_w = new_h * aspect
+    else:
+        new_h = min(max_h, img_h)
+        new_w = new_h * aspect
+        if new_w > max_w:
+            new_w = max_w
+            new_h = new_w / aspect
+
+    x = (page_width - new_w) / 2
+    y = (page_height - new_h) / 2
+
+    buf = io.BytesIO()
+    pil_img.save(buf, format='PNG')
+    buf.seek(0)
+    pil_img.close()
+    del pil_img
+
+    c.drawImage(ImageReader(buf), x, y, width=new_w, height=new_h)
+    c.setFont("Helvetica", 10)
+    c.drawCentredString(page_width / 2, 20, f"Page {page_number}")
+    c.showPage()
+
+    buf.close()
+
+    if delete_after:
+        try:
+            os.remove(img_path)
+        except OSError as e:
+            print(f"⚠️ Could not delete temp image {img_path}: {e}")
+
+
+def finalize_pdf(c, output_path):
+    """Save and close the canvas."""
+    c.save()
+    print(f"✅ PDF saved: {output_path}")
+
+
+# ---------------------------------------------------------------------------
+# Legacy batch helper (kept for backward-compatibility)
+# ---------------------------------------------------------------------------
 
 def create_coloring_book_pdf(images, output_path, book_details):
     """
-    Create a PDF coloring book from a list of images
-    
-    Args:
-        images (list): List of image paths or PIL Image objects
-        output_path (str): Path where the PDF will be saved
-        book_details (dict): Dictionary containing book information
+    Create a PDF from a list of image paths.
+    Processes one image at a time and deletes each temp file after writing
+    to keep memory usage at O(1) images regardless of page count.
     """
     try:
-        # Use A4 page size (good for coloring books)
-        page_width, page_height = A4
-        
-        # Create PDF
-        c = canvas.Canvas(output_path, pagesize=A4)
-        
-        # Add title page
-        add_title_page(c, book_details, page_width, page_height)
-        
-        # Add each coloring page
-        for idx, img in enumerate(images):
+        c = open_pdf_canvas(output_path, book_details)
+        for idx, img_path in enumerate(images):
             print(f"Adding page {idx + 1}/{len(images)} to PDF...")
-            
-            # Convert to PIL Image if it's a path
-            if isinstance(img, str):
-                pil_img = Image.open(img)
-            else:
-                pil_img = img
-            
-            # Convert to RGB if necessary
-            if pil_img.mode != 'RGB':
-                pil_img = pil_img.convert('RGB')
-            
-            # Calculate dimensions to fit page while maintaining aspect ratio
-            img_width, img_height = pil_img.size
-            aspect_ratio = img_width / img_height
-            
-            # Reduced padding for better page coverage (0.5 inch = 36 points)
-            padding = 36  # Was 72 (1 inch), now 36 (0.5 inch) for ~55% coverage
-            max_width = page_width - (2 * padding)
-            max_height = page_height - (2 * padding)
-            
-            # Calculate new dimensions while maintaining aspect ratio
-            if aspect_ratio > 1:
-                # Landscape orientation
-                new_width = min(max_width, img_width)
-                new_height = new_width / aspect_ratio
-                # If height exceeds max, recalculate based on height
-                if new_height > max_height:
-                    new_height = max_height
-                    new_width = new_height * aspect_ratio
-            else:
-                # Portrait orientation
-                new_height = min(max_height, img_height)
-                new_width = new_height * aspect_ratio
-                # If width exceeds max, recalculate based on width
-                if new_width > max_width:
-                    new_width = max_width
-                    new_height = new_width / aspect_ratio
-            
-            # Center the image on the page
-            x = (page_width - new_width) / 2
-            y = (page_height - new_height) / 2
-            
-            # Convert PIL image to ImageReader for reportlab
-            img_buffer = io.BytesIO()
-            pil_img.save(img_buffer, format='PNG')
-            img_buffer.seek(0)
-            img_reader = ImageReader(img_buffer)
-            
-            # Draw image on PDF
-            c.drawImage(img_reader, x, y, width=new_width, height=new_height)
-            
-            # Add page number at bottom
-            c.setFont("Helvetica", 10)
-            c.drawCentredString(page_width / 2, 20, f"Page {idx + 1}")
-            
-            # Start new page (except for last image)
-            if idx < len(images) - 1:
-                c.showPage()
-        
-        # Save PDF
-        c.save()
-        print(f"PDF successfully created: {output_path}")
+            append_image_to_canvas(c, img_path, page_number=idx + 1, delete_after=False)
+        finalize_pdf(c, output_path)
         return True
-        
     except Exception as e:
         print(f"Error creating PDF: {str(e)}")
         return False

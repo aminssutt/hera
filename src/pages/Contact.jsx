@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import AnimatedBackground from '../components/AnimatedBackground';
+import { BACKEND_URL } from '../config/api';
 
 const Contact = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const Contact = () => {
     setSubmitStatus(null);
 
     try {
-      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/contact-feedback`, {
+      const response = await fetch(`${BACKEND_URL}/api/contact-feedback`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

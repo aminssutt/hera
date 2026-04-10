@@ -1,38 +1,24 @@
-import { useState, useEffect } from 'react'
+import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
+import { BACKEND_URL } from '../../config/api'
+import usePromoInfo from '../../hooks/usePromoInfo'
 
 const StepFour = ({ selections }) => {
   const { t } = useTranslation()
   const [loading, setLoading] = useState(false)
   const [generatedImage, setGeneratedImage] = useState(null)
   const [error, setError] = useState(null)
-  const [format, setFormat] = useState('pdf') // 'pdf' or 'physical'
-  const [bookType, setBookType] = useState('blackwhite') // 'blackwhite' or 'colored'
-  const [promoInfo, setPromoInfo] = useState(null)
-
-  // Fetch current price and promo status
-  useEffect(() => {
-    const fetchPromoInfo = async () => {
-      try {
-        const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
-        const response = await fetch(`${backendUrl}/api/current-price`)
-        const data = await response.json()
-        setPromoInfo(data)
-      } catch (err) {
-        console.error('Failed to fetch promo info:', err)
-      }
-    }
-    fetchPromoInfo()
-  }, [])
+  const [format, setFormat] = useState('pdf')
+  const [bookType, setBookType] = useState('blackwhite')
+  const promoInfo = usePromoInfo()
 
   const generatePreview = async () => {
     setLoading(true)
     setError(null)
 
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
-      const response = await fetch(`${backendUrl}/api/generate`, {
+      const response = await fetch(`${BACKEND_URL}/api/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -84,8 +70,7 @@ const StepFour = ({ selections }) => {
 
   const handlePayment = async () => {
     try {
-      const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
-      const response = await fetch(`${backendUrl}/api/create-checkout`, {
+      const response = await fetch(`${BACKEND_URL}/api/create-checkout`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

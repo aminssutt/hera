@@ -3,6 +3,7 @@ import { useSearchParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import AnimatedBackground from '../components/AnimatedBackground'
+import { BACKEND_URL } from '../config/api'
 
 const Success = () => {
   const [searchParams] = useSearchParams()
@@ -21,10 +22,19 @@ const Success = () => {
       return
     }
 
-    const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'
-    
-    // Poll for generation status every 3 seconds
+    const backendUrl = BACKEND_URL
+
+    // Poll for generation status every 3 seconds, stop after 100 polls (~5 minutes)
+    let pollCount = 0
+    const MAX_POLLS = 100
     const pollInterval = setInterval(() => {
+      pollCount++
+      if (pollCount >= MAX_POLLS) {
+        clearInterval(pollInterval)
+        setGenerationStatus('error')
+        setStatusMessage('Generation is taking longer than expected. Please check your email or contact support at contact@herastudio.art.')
+        return
+      }
       fetch(`${backendUrl}/api/generation-status/${sessionId}`)
         .then(res => res.json())
         .then(data => {
@@ -169,7 +179,7 @@ const Success = () => {
                     >
                       <div className="bg-gray-100 rounded-2xl p-4 mb-4">
                         <iframe
-                          src={`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/download-pdf/${pdfFilename}`}
+                          src={`${BACKEND_URL}/api/download-pdf/${pdfFilename}`}
                           className="w-full h-[600px] rounded-xl shadow-inner"
                           title="Your Coloring Book"
                         />
@@ -177,7 +187,7 @@ const Success = () => {
                       
                       <div className="flex gap-4 justify-center">
                         <a
-                          href={`${import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000'}/api/download-pdf/${pdfFilename}`}
+                          href={`${BACKEND_URL}/api/download-pdf/${pdfFilename}`}
                           download
                           className="bg-hera-purple text-white font-fredoka font-bold text-lg px-6 py-3 rounded-full shadow-lg hover:bg-purple-700 transition"
                         >
